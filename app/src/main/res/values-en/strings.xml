@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Meus bagulhos</string>
+    <string name="tabDone">DONE</string>
+    <string name="tabUndone">UNDONE</string>
+</resources>
