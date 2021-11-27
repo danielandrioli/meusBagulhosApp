@@ -9,8 +9,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
-    private val tabLayout by lazy {findViewById<TabLayout>(R.id.mainTabLayout)}
-    private val viewPager2 by lazy {findViewById<ViewPager2>(R.id.mainViewPager)}
+    private val tabLayout by lazy { findViewById<TabLayout>(R.id.mainTabLayout) }
+    private val viewPager2 by lazy { findViewById<ViewPager2>(R.id.mainViewPager) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -3,4 +3,5 @@
     <string name="app_name">Meus bagulhos</string>
     <string name="tabDone">DONE</string>
     <string name="tabUndone">UNDONE</string>
+    <string name="tarefaProntaEm">Done in</string>
 </resources>
