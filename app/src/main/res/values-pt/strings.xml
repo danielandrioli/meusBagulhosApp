@@ -4,4 +4,6 @@
     <string name="tabDone">FEITO</string>
     <string name="tabUndone">A FAZER</string>
     <string name="tarefaProntaEm">Feito em</string>
+    <string name="tarefaEscrever">Digite sua tarefa...</string>
+    <string name="tarefaLinha">Linha</string>
 </resources>

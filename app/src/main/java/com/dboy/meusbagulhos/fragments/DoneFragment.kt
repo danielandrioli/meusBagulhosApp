@@ -29,7 +29,7 @@ class DoneFragment : Fragment() {
 
     fun inicializaRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.doneFragRecycler)
-        val listaProvisoria = metodoProvisorioLista() //CAPTURAR LISTA DO BANCO DE DADOS!
+        val listaProvisoria = metodoProvisorioLista() //CAPTURAR LISTA DO BANCO DE DADOS!   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         recyclerView.adapter = RViewDoneListAdapter(requireContext(), listaProvisoria)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }

@@ -3,5 +3,7 @@
     <string name="tabDone">DONE</string>
     <string name="tabUndone">UNDONE</string>
     <string name="tarefaProntaEm">Done in</string>
+    <string name="tarefaEscrever">Type your to do...</string>
+    <string name="tarefaLinha">Line</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

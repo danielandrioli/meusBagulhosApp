@@ -4,4 +4,6 @@
     <string name="tabDone">DONE</string>
     <string name="tabUndone">UNDONE</string>
     <string name="tarefaProntaEm">Done in</string>
+    <string name="tarefaEscrever">Type your to do...</string>
+    <string name="tarefaLinha">Line</string>
 </resources>
