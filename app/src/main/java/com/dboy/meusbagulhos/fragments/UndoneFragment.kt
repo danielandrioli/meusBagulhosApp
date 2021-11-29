@@ -1,6 +1,7 @@
 package com.dboy.meusbagulhos.fragments
 
 import android.app.Dialog
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
@@ -62,12 +63,20 @@ class UndoneFragment : Fragment() {
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     textoCapacidade.text = "${p0?.length}" +
                             "/${textoTarefa.maxCharacters}"
-                    textoLinha.text = "${getString(R.string.tarefaLinha)} ${p0?.lines()?.size.toString()}" +
+                    textoLinha.text = "${getString(R.string.tarefaLinha)} ${textoTarefa.lineCount}" +
                             "/${textoTarefa.maxLines}"
 
+
+                    if (p0?.length == textoTarefa.maxCharacters) textoCapacidade.setTextColor(Color.parseColor("#FF0000"))
+                    else textoCapacidade.setTextColor(Color.parseColor("#FF323232"))
+
+                    if (textoTarefa.lineCount == textoTarefa.maxLines) textoLinha.setTextColor(Color.parseColor("#FF0000"))
+                    else textoLinha.setTextColor(Color.parseColor("#FF323232"))
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
+//                    if (p0?.length == 160) textoCapacidade.setTextColor(Color.parseColor("#FF0000"))
+
                   //tudook
                 }
             })

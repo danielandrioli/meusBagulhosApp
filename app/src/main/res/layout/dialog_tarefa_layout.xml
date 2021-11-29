@@ -42,7 +42,9 @@
             android:layout_marginTop="6dp"
             android:layout_marginEnd="6dp"
             android:layout_marginBottom="6dp"
-            android:text="0/160" />
+            android:text="0/160"
+            android:textColor="@color/cinza_escuro"
+            android:textColorHint="@color/cinza_escuro" />
 
         <TextView
             android:id="@+id/dialog_txt_linhas"
@@ -54,7 +56,8 @@
             android:layout_marginTop="6dp"
             android:layout_marginEnd="6dp"
             android:layout_marginBottom="6dp"
-            tools:text="Linha 1/7"/>
+            android:textColor="@color/cinza_escuro"
+            tools:text="Linha 1/7" />
     </RelativeLayout>
 
     <ImageButton
