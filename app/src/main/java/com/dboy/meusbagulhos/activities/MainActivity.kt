@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         configuraViewPagerAdapter()
         configuraTabLayout()
 
+
+
     }
 
     private fun configuraViewPagerAdapter() {

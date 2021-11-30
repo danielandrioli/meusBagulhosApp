@@ -27,7 +27,7 @@ class DoneFragment : Fragment() {
         return view
     }
 
-    fun inicializaRecyclerView(view: View) {
+    private fun inicializaRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.doneFragRecycler)
         val listaProvisoria = metodoProvisorioLista() //CAPTURAR LISTA DO BANCO DE DADOS!   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         recyclerView.adapter = RViewDoneListAdapter(requireContext(), listaProvisoria)

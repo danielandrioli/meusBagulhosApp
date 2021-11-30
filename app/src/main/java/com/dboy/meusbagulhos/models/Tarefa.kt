@@ -12,15 +12,17 @@ class Tarefa(texto: String) {
     var dataFinalizacao: String? = null
         private set
     var isFinalizado: Boolean = false
+    var isEditado: Boolean = false
+        private set
 
     fun editaTexto(novoTexto: String) {
         texto = novoTexto
         dataEdicao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
+        isEditado = true
     }
 
     fun finalizaTarefa() {
         dataFinalizacao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
         isFinalizado = true
     }
-
 }
