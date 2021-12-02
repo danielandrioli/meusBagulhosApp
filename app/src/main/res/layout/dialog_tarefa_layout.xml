@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <com.dboy.meusbagulhos.models.LimitedEditText
+        <com.dboy.meusbagulhos.auxiliares.LimitedEditText
             android:id="@+id/dialog_eTxt_tarefa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

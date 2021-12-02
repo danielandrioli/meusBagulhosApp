@@ -8,13 +8,14 @@ import android.widget.TextView
 import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
+import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
 
 class RViewDoneListAdapter(
     private val context: Context,
-    private var listaTarefasFeitas: List<Tarefa>
+    private val tarefaDAO: TarefaDAO
 ) : RecyclerView.Adapter<RViewDoneListAdapter.MyViewHolder>() {
-
+    private var listaTarefasFeitas = tarefaDAO.listarDone()
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -42,8 +43,8 @@ class RViewDoneListAdapter(
         return listaTarefasFeitas.size
     }
 
-    fun atualizaLista(listaAtualizada: List<Tarefa>){
-        listaTarefasFeitas = listaAtualizada
+    fun atualizaLista(){
+        listaTarefasFeitas = tarefaDAO.listarDone()
         notifyDataSetChanged()
     }
 

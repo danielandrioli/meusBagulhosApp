@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
+import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
 import java.util.zip.Inflater
 
-class RViewUndoneListAdapter(private val context: Context, private var listaTarefas: List<Tarefa>) :
+class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
     RecyclerView.Adapter<RViewUndoneListAdapter.MeuViewHolder>() {
+    private var listaTarefas = tarefaDAO.listarUndone()
 
     inner class MeuViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun vincular(tarefa: Tarefa) {
@@ -19,7 +21,7 @@ class RViewUndoneListAdapter(private val context: Context, private var listaTare
             val dataTarefa = itemView.findViewById<TextView>(R.id.tarefaNao_data_txt)
 
             textoTarefa.text = tarefa.texto
-            dataTarefa.text = if (tarefa.isEditado){
+            dataTarefa.text = if (tarefa.dataEdicao != null){
                 "${context.getText(R.string.tarefaEditadaEm)} ${tarefa.dataEdicao}"
             }else{
                 "${context.getText(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"
@@ -41,5 +43,10 @@ class RViewUndoneListAdapter(private val context: Context, private var listaTare
 
     override fun getItemCount(): Int {
         return listaTarefas.size
+    }
+
+    fun atualizarLista(){
+        listaTarefas = tarefaDAO.listarUndone()
+        notifyDataSetChanged()
     }
 }

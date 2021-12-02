@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.ViewPagerAdapter
+import com.dboy.meusbagulhos.auxiliares.DbHelper
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -18,8 +19,6 @@ class MainActivity : AppCompatActivity() {
 
         configuraViewPagerAdapter()
         configuraTabLayout()
-
-
 
     }
 

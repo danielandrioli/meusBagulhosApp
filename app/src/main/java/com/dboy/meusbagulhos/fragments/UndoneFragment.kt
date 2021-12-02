@@ -18,11 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.RViewUndoneListAdapter
-import com.dboy.meusbagulhos.models.LimitedEditText
+import com.dboy.meusbagulhos.auxiliares.LimitedEditText
+import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class UndoneFragment : Fragment() {
+    private lateinit var tarefaDao: TarefaDAO
+    private lateinit var undoneAdapter: RViewUndoneListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +37,9 @@ class UndoneFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_undone, container, false)
+        tarefaDao = TarefaDAO(requireContext())
+        undoneAdapter = RViewUndoneListAdapter(requireContext(), tarefaDao)
+
         configuraFab(view)
         inicializaRecyclerView(view)
 
@@ -42,16 +48,8 @@ class UndoneFragment : Fragment() {
 
     private fun inicializaRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.undoneFragRecycler)
-        val listaProvisoria = metodoProvisorioLista() //CAPTURAR LISTA DO BANCO DE DADOS!   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        recyclerView.adapter = RViewUndoneListAdapter(requireContext(), listaProvisoria)
+        recyclerView.adapter = undoneAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun metodoProvisorioLista(): List<Tarefa>{
-        val t1 = Tarefa("Assistir ao Grêmio na série B")
-        val t2 = Tarefa("Ae 03")
-        t2.editaTexto("Essa foi editada arê arê ae")
-        return listOf<Tarefa>(t1, t2)
     }
 
     private fun configuraFab(view: View) {
@@ -113,7 +111,7 @@ class UndoneFragment : Fragment() {
 
         btnClose.setOnClickListener {
             if (textoTarefa.text.toString().isNotEmpty()) {
-                val alertDialog = AlertDialog.Builder(requireContext())
+                AlertDialog.Builder(requireContext())
                     .setTitle(R.string.aDialogTitle)
                     .setMessage(R.string.aDialogMessage)
                     .setPositiveButton(R.string.aDialogYes) { _, _ ->
@@ -125,11 +123,18 @@ class UndoneFragment : Fragment() {
             } else dialog.cancel()
         }
         btnCheck.setOnClickListener { /*ENVIAR TAREFA ESCRITA PARA O BANCO DE DADOS E ATUALIZAR O ADAPTER*/
+            if(textoTarefa.text.toString().isNotEmpty()){
+                val tarefa = Tarefa(textoTarefa.text.toString())
+                tarefaDao.criarTarefa(tarefa)
+                undoneAdapter.atualizarLista()
 
-            Toast.makeText(requireContext(), R.string.aDialogTaskCreated, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.aDialogTaskCreated, Toast.LENGTH_SHORT).show()
+            }
+
             dialog.cancel()
         }
 
         dialog.show()
     }
+
 }

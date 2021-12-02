@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.RViewDoneListAdapter
+import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
 
 class DoneFragment : Fragment() {
+    private lateinit var tarefaDao: TarefaDAO
+    private lateinit var doneListAdapter: RViewDoneListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +25,9 @@ class DoneFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_done, container, false)
+
+        tarefaDao = TarefaDAO(requireContext())
+        doneListAdapter = RViewDoneListAdapter(requireContext(), tarefaDao)
         inicializaRecyclerView(view)
 
         return view
@@ -29,16 +35,7 @@ class DoneFragment : Fragment() {
 
     private fun inicializaRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.doneFragRecycler)
-        val listaProvisoria = metodoProvisorioLista() //CAPTURAR LISTA DO BANCO DE DADOS!   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        recyclerView.adapter = RViewDoneListAdapter(requireContext(), listaProvisoria)
+        recyclerView.adapter = doneListAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun metodoProvisorioLista(): List<Tarefa>{
-        val t1 = Tarefa("Ae 01")
-        val t2 = Tarefa("Ae 03")
-        t1.finalizaTarefa()
-        t2.finalizaTarefa()
-        return listOf<Tarefa>(t1, t2, Tarefa("terceira, e nao finalizada"))
     }
 }

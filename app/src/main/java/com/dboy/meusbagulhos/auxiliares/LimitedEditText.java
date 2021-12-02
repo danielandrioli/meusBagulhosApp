@@ -1,10 +1,9 @@
-package com.dboy.meusbagulhos.models;
+package com.dboy.meusbagulhos.auxiliares;
 
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.widget.Toast;
 
 /**
  * EditText subclass created to enforce limit of the lines number in editable
