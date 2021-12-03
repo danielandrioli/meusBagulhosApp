@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.RViewUndoneListAdapter
+import com.dboy.meusbagulhos.adapters.RViewUndoneListAdapter.OnTarefaListener
 import com.dboy.meusbagulhos.auxiliares.LimitedEditText
 import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
@@ -37,13 +38,33 @@ class UndoneFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_undone, container, false)
-        tarefaDao = TarefaDAO(requireContext())
-        undoneAdapter = RViewUndoneListAdapter(requireContext(), tarefaDao)
 
+        tarefaDao = TarefaDAO(requireContext())
+        configuraAdapter()
         configuraFab(view)
         inicializaRecyclerView(view)
 
         return view
+    }
+
+    private fun configuraAdapter(){
+        undoneAdapter = RViewUndoneListAdapter(requireContext(), tarefaDao)
+        undoneAdapter.setOnTarefaClickListener(object: OnTarefaListener{
+            override fun onTarefaClick(posicao: Int) {
+
+            }
+
+            override fun onTarefaLongClick(posicao: Int) {
+//                TODO("Not yet implemented")
+
+            }
+
+            override fun onTarefaDoubleClick(posicao: Int) {
+                tarefaDao.finalizarTarefa(undoneAdapter.listar()[posicao])
+                undoneAdapter.atualizarLista()
+            }
+
+        })
     }
 
     private fun inicializaRecyclerView(view: View) {
@@ -133,7 +154,6 @@ class UndoneFragment : Fragment() {
 
             dialog.cancel()
         }
-
         dialog.show()
     }
 

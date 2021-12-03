@@ -33,6 +33,11 @@ class DoneFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        doneListAdapter.atualizaLista()
+    }
+
     private fun inicializaRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.doneFragRecycler)
         recyclerView.adapter = doneListAdapter
