@@ -14,12 +14,14 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.RViewUndoneListAdapter
 import com.dboy.meusbagulhos.adapters.RViewUndoneListAdapter.OnTarefaListener
 import com.dboy.meusbagulhos.auxiliares.LimitedEditText
+import com.dboy.meusbagulhos.auxiliares.SwipeGesture
 import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -76,6 +78,9 @@ class UndoneFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.undoneFragRecycler)
         recyclerView.adapter = undoneAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val itemTouchHelper = ItemTouchHelper(SwipeGesture())
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun configuraFab(view: View) {

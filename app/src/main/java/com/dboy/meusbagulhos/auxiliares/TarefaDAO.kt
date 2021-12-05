@@ -24,7 +24,7 @@ class TarefaDAO(context: Context) {
         //da pra colocar o contadorUndone e done como property e manipular seu get()
         val contadorUndone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
                 " isFinalizado=?", arrayOf("0")).toInt()
-        cv.put("positionUndone", contadorUndone + 1)
+        cv.put("positionUndone", contadorUndone)
 
         try{
             escreve.insert(DbHelper.nomeTabelaTarefas, null, cv)
@@ -53,6 +53,12 @@ class TarefaDAO(context: Context) {
     }
 
     fun deletar(tarefa: Tarefa): Boolean{
+        if (tarefa.isFinalizado){
+            removePosicaoListaDone(tarefa)
+        }else{
+            removePosicaoListaUndone(tarefa)
+        }
+
         try {
             val args = arrayOf(tarefa.id.toString())
             escreve.delete(DbHelper.nomeTabelaTarefas, "id=?", args)
@@ -69,14 +75,14 @@ class TarefaDAO(context: Context) {
         val contadorDone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
                 " isFinalizado=?", arrayOf("1")).toInt()
 
-        cv.put("texto", tarefa.texto)//nem precisa...
         cv.put("dataFinalizacao", dataFinalizacao)
         cv.put("isFinalizado", true)
-        cv.put("positionDone", contadorDone + 1)
+        cv.put("positionDone", contadorDone)
         cv.put("positionUndone", -1)
-//        val mContador = le.rawQuery("SELECT COUNT(id) FROM ${DbHelper.nomeTabelaTarefas} WHERE isFinalizado = 1", null)
-//        val totalFinalizados = mContador.count
+
         Log.i(tagLogTarefaDAO, "Resultado do count done: $contadorDone")
+
+        removePosicaoListaUndone(tarefa)
 
         try {
             val args = arrayOf(tarefa.id.toString())
@@ -89,6 +95,39 @@ class TarefaDAO(context: Context) {
         return true
     }
 
+    private fun removePosicaoListaUndone(tarefa: Tarefa){
+        val listaUndone = listarUndone() as MutableList
+        listaUndone.removeAt(tarefa.positionUndone) //O objetivo de deletar da lista é apenas se guiar melhor pelo índice
+
+        for((indice, tarefa) in listaUndone.withIndex()){
+            tarefa.positionUndone = indice
+            atualizaPosicao(tarefa)
+        }
+    }
+
+    private fun atualizaPosicao(tarefa: Tarefa){
+        val cv = ContentValues()
+        cv.put("positionUndone", tarefa.positionUndone)
+        cv.put("positionDone", tarefa.positionDone)
+
+        try {
+            val args = arrayOf(tarefa.id.toString())
+            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
+        }catch (e: Exception){
+            Log.i(tagLogTarefaDAO, "Erro ao atualizar posições: $e")
+        }
+    }
+
+    private fun removePosicaoListaDone(tarefa: Tarefa){
+        val listaDone = listarDone() as MutableList
+        listaDone.removeAt(tarefa.positionDone)
+
+        for((indice, tarefa) in listarDone().withIndex()){
+            tarefa.positionDone = indice
+            atualizaPosicao(tarefa)
+        }
+    }
+
     fun desfinalizarTarefa(tarefa: Tarefa): Boolean{
         val cv = ContentValues()
         val contadorUndone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
@@ -97,9 +136,11 @@ class TarefaDAO(context: Context) {
         cv.put("dataFinalizacao", "")
         cv.put("isFinalizado", false)
         cv.put("positionDone", -1)
-        cv.put("positionUndone", contadorUndone + 1)
+        cv.put("positionUndone", contadorUndone)
 
         Log.i(tagLogTarefaDAO, "Resultado do count undone: $contadorUndone")
+
+        removePosicaoListaDone(tarefa)
 
         try {
             val args = arrayOf(tarefa.id.toString())
@@ -130,8 +171,7 @@ class TarefaDAO(context: Context) {
             val tarefa = Tarefa(id, texto, dataCriacao, dataEdicao = dataEdicao, positionUndone = positionUndone)
             listaTarefa.add(tarefa)
         }
-        Log.i(tagLogTarefaDAO, "Lista tarefa undone: ${listaTarefa.reversed()}")
-        return listaTarefa.reversed()
+        return listaTarefa
     }
 
     fun listarDone(): List<Tarefa>{
@@ -152,10 +192,6 @@ class TarefaDAO(context: Context) {
             isFinalizado = true, dataFinalizacao = dataFinalizacao)
             listaTarefa.add(tarefa)
         }
-        Log.i(tagLogTarefaDAO, "Lista tarefa done: ${listaTarefa.reversed()}")
-        return listaTarefa.reversed()
+        return listaTarefa
     }
-
-    //fun atualizaPosicaoListaUndone()
-    //private fun listarQtdadeUndone()
 }

@@ -14,7 +14,7 @@ import com.dboy.meusbagulhos.models.Tarefa
 
 class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
     RecyclerView.Adapter<RViewDoneListAdapter.MyViewHolder>() {
-    var listaTarefasFeitas = tarefaDAO.listarDone()
+    var listaTarefasFeitas = tarefaDAO.listarDone().reversed()
         private set
     private lateinit var mListener: OnTarefaListener
 
@@ -82,7 +82,7 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
     }
 
     fun atualizaLista(){
-        listaTarefasFeitas = tarefaDAO.listarDone()
+        listaTarefasFeitas = tarefaDAO.listarDone().reversed()
         notifyDataSetChanged()
     }
 

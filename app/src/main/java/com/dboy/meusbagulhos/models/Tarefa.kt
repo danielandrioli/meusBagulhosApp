@@ -15,12 +15,12 @@ class Tarefa(var texto: String): Serializable{
         private set
     var id: Int = 0
         private set
-    var positionUndone: Int? = null
-    var positionDone: Int? = null
+    var positionUndone: Int = -1
+    var positionDone: Int = -1
 
     constructor(id: Int, texto: String, dataCriacao: String,
                 isFinalizado: Boolean = false, dataEdicao: String? = null, dataFinalizacao: String? = null,
-                positionUndone: Int? = null, positionDone: Int? = null): this(texto){
+                positionUndone: Int = -1, positionDone: Int = -1): this(texto){
         this.dataCriacao = dataCriacao
         this.dataEdicao = dataEdicao
         this.dataFinalizacao = dataFinalizacao

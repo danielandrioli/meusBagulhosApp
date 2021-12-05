@@ -15,7 +15,7 @@ import com.dboy.meusbagulhos.models.Tarefa
 
 class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
     RecyclerView.Adapter<RViewUndoneListAdapter.MeuViewHolder>() {
-    var listaTarefas = tarefaDAO.listarUndone()
+    var listaTarefas = tarefaDAO.listarUndone().reversed()
         private set
     private lateinit var mListener: OnTarefaListener
 
@@ -61,20 +61,6 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
                     }
                 }
             })
-
-            textoTarefa.setOnLongClickListener {
-                val posicao = adapterPosition
-                if(posicao != RecyclerView.NO_POSITION){
-                    mListener.onTarefaLongClick(posicao)
-                    Log.i("undoneAdapter", "Long click!")
-                }
-                true
-            }
-
-            dragButton.setOnDragListener { view, dragEvent -> true
-
-            }
-            //FAZER PRO DRAGBUTTON. ON DRAG LISTENER
         }
 
     }
@@ -95,7 +81,7 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
     }
 
     fun atualizarLista(){
-        listaTarefas = tarefaDAO.listarUndone()
+        listaTarefas = tarefaDAO.listarUndone().reversed()
         notifyDataSetChanged()
     }
 
