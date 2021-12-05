@@ -15,7 +15,8 @@ import com.dboy.meusbagulhos.models.Tarefa
 
 class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
     RecyclerView.Adapter<RViewUndoneListAdapter.MeuViewHolder>() {
-    private var listaTarefas = tarefaDAO.listarUndone()
+    var listaTarefas = tarefaDAO.listarUndone()
+        private set
     private lateinit var mListener: OnTarefaListener
 
     interface OnTarefaListener{
@@ -43,13 +44,6 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
         }
 
         init {//DA PARA COLOCAR O CLICKLISTENER NO ITEMVIEW. AÍ PEGA T0DO ELE, COM EXCEÇÃO DO DRAG Q VAI TER SEU PROPRIO LISTENER
-//            textoTarefa.setOnClickListener {
-//                val posicao = adapterPosition
-//                if(posicao != RecyclerView.NO_POSITION){
-//                    mListener.onTarefaClick(posicao)
-//                }
-//            }
-
             textoTarefa.setOnClickListener(object : DoubleClickListener(){
                 override fun onDoubleClick() {
                     val posicao = adapterPosition
@@ -66,7 +60,6 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
                         Log.i("undoneAdapter", "Single click!")
                     }
                 }
-
             })
 
             textoTarefa.setOnLongClickListener {
@@ -78,6 +71,9 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
                 true
             }
 
+            dragButton.setOnDragListener { view, dragEvent -> true
+
+            }
             //FAZER PRO DRAGBUTTON. ON DRAG LISTENER
         }
 
@@ -102,7 +98,5 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
         listaTarefas = tarefaDAO.listarUndone()
         notifyDataSetChanged()
     }
-
-    fun listar(): List<Tarefa> = listaTarefas.toList()
 
 }

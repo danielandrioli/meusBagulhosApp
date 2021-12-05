@@ -47,6 +47,11 @@ class UndoneFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        undoneAdapter.atualizarLista() //ARRUMAR ISSO AQUI. QUANDO INICIALIZA O APP, TÁ CHAMANDO DUAS VEZES O ATUALIZA PQ APOS O ONCREATE VEM ONRESUME
+    }
+
     private fun configuraAdapter(){
         undoneAdapter = RViewUndoneListAdapter(requireContext(), tarefaDao)
         undoneAdapter.setOnTarefaClickListener(object: OnTarefaListener{
@@ -60,7 +65,7 @@ class UndoneFragment : Fragment() {
             }
 
             override fun onTarefaDoubleClick(posicao: Int) {
-                tarefaDao.finalizarTarefa(undoneAdapter.listar()[posicao])
+                tarefaDao.finalizarTarefa(undoneAdapter.listaTarefas[posicao])
                 undoneAdapter.atualizarLista()
             }
 

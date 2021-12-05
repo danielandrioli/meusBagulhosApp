@@ -20,10 +20,11 @@ class TarefaDAO(context: Context) {
         val cv = ContentValues()
         cv.put("texto", tarefa.texto)
         cv.put("dataCriacao", tarefa.dataCriacao)
-        cv.put("isFinalizado", tarefa.isFinalizado)
-//        cv.put("dataEdicao", tarefa.dataEdicao)
-//        cv.put("dataFinalizacao", tarefa.dataFinalizacao)
-
+        cv.put("isFinalizado", false)
+        //da pra colocar o contadorUndone e done como property e manipular seu get()
+        val contadorUndone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
+                " isFinalizado=?", arrayOf("0")).toInt()
+        cv.put("positionUndone", contadorUndone + 1)
 
         try{
             escreve.insert(DbHelper.nomeTabelaTarefas, null, cv)
@@ -66,24 +67,21 @@ class TarefaDAO(context: Context) {
         val cv = ContentValues()
         val dataFinalizacao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
         val contadorDone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
-                " isFinalizado=?", arrayOf("1"))
+                " isFinalizado=?", arrayOf("1")).toInt()
 
-        cv.put("texto", tarefa.texto)
+        cv.put("texto", tarefa.texto)//nem precisa...
         cv.put("dataFinalizacao", dataFinalizacao)
         cv.put("isFinalizado", true)
-        cv.put("positionDone", contadorDone.toInt() + 1)
+        cv.put("positionDone", contadorDone + 1)
         cv.put("positionUndone", -1)
 //        val mContador = le.rawQuery("SELECT COUNT(id) FROM ${DbHelper.nomeTabelaTarefas} WHERE isFinalizado = 1", null)
 //        val totalFinalizados = mContador.count
-        Log.i(tagLogTarefaDAO, "Resultado do count: $contadorDone")
+        Log.i(tagLogTarefaDAO, "Resultado do count done: $contadorDone")
 
         try {
             val args = arrayOf(tarefa.id.toString())
             escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
-            Log.i(tagLogTarefaDAO, "Tarefa de id ${tarefa.id.toString()} atualizada!")
-            val contadorDone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
-                    " isFinalizado=?", arrayOf("1"))
-            Log.i(tagLogTarefaDAO, "Resultado do novo count: $contadorDone")
+            Log.i(tagLogTarefaDAO, "Tarefa de id ${tarefa.id} finalizada!")
         }catch (e: Exception){
             Log.i(tagLogTarefaDAO, "Erro ao atualizar finalização da tarefa: $e")
             return false
@@ -91,9 +89,30 @@ class TarefaDAO(context: Context) {
         return true
     }
 
-    fun desfinalizarTarefa(tarefa: Tarefa){
+    fun desfinalizarTarefa(tarefa: Tarefa): Boolean{
+        val cv = ContentValues()
+        val contadorUndone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
+                " isFinalizado=?", arrayOf("0")).toInt()
 
+        cv.put("dataFinalizacao", "")
+        cv.put("isFinalizado", false)
+        cv.put("positionDone", -1)
+        cv.put("positionUndone", contadorUndone + 1)
+
+        Log.i(tagLogTarefaDAO, "Resultado do count undone: $contadorUndone")
+
+        try {
+            val args = arrayOf(tarefa.id.toString())
+            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
+            Log.i(tagLogTarefaDAO, "Tarefa de id ${tarefa.id} desfinalizada!")
+        }catch (e: Exception){
+            Log.i(tagLogTarefaDAO, "Erro ao atualizar desfinalização da tarefa: $e")
+            return false
+        }
+        return true
     }
+
+//DÁ PARA ARRUMAR BEM ESSE CÓDIGO DESSA CLASSE TAREFADAO. LISTAR DONE E UNDONE PODEM TER UM METODO EM COMUM, ASSIM COMO FINALIZAR E DESFINALIZAR
 
     fun listarUndone(): List<Tarefa>{
         Log.i(tagLogTarefaDAO, "Listando undone")
@@ -111,8 +130,8 @@ class TarefaDAO(context: Context) {
             val tarefa = Tarefa(id, texto, dataCriacao, dataEdicao = dataEdicao, positionUndone = positionUndone)
             listaTarefa.add(tarefa)
         }
-
-        return listaTarefa
+        Log.i(tagLogTarefaDAO, "Lista tarefa undone: ${listaTarefa.reversed()}")
+        return listaTarefa.reversed()
     }
 
     fun listarDone(): List<Tarefa>{
@@ -133,11 +152,10 @@ class TarefaDAO(context: Context) {
             isFinalizado = true, dataFinalizacao = dataFinalizacao)
             listaTarefa.add(tarefa)
         }
-        return listaTarefa
+        Log.i(tagLogTarefaDAO, "Lista tarefa done: ${listaTarefa.reversed()}")
+        return listaTarefa.reversed()
     }
 
     //fun atualizaPosicaoListaUndone()
     //private fun listarQtdadeUndone()
-
-
 }

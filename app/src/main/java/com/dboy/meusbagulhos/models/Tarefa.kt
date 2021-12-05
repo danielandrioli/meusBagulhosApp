@@ -30,25 +30,7 @@ class Tarefa(var texto: String): Serializable{
         this.positionDone = positionDone
     }
 
-    fun editaTexto(novoTexto: String) { //DELETAR MÉTODO. TAREFADAO SERÁ RESPONSÁVEL POR EDIÇÃO
-        texto = novoTexto
-        dataEdicao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
-
-        //ATUALIZAR NO DB
-    }
-
-    fun finalizaTarefa() { //DELETAR MÉTODO. TAREFADAO SERÁ RESPONSÁVEL POR FINALIZAÇÃO
-        dataFinalizacao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
-        isFinalizado = true
-
-
-        //ATUALIZAR NO DB
-    }
-
-    fun desfinalizaTarefa(){ //DELETAR MÉTODO. TAREFADAO SERÁ RESPONSÁVEL POR DESFINALIZAÇÃO
-        dataFinalizacao = null
-        isFinalizado = false
-
-        //ATUALIZAR NO DB
+    override fun toString(): String {
+        return "id: $id - posU: $positionUndone - $texto"
     }
 }

@@ -27,7 +27,7 @@ class DoneFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_done, container, false)
 
         tarefaDao = TarefaDAO(requireContext())
-        doneListAdapter = RViewDoneListAdapter(requireContext(), tarefaDao)
+        configuraAdapter()
         inicializaRecyclerView(view)
 
         return view
@@ -36,6 +36,25 @@ class DoneFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         doneListAdapter.atualizaLista()
+    }
+
+    private fun configuraAdapter() {
+        doneListAdapter = RViewDoneListAdapter(requireContext(), tarefaDao)
+        doneListAdapter.setOnTarefaClickListener(object: RViewDoneListAdapter.OnTarefaListener{
+            override fun onTarefaClick(posicao: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTarefaLongClick(posicao: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTarefaDoubleClick(posicao: Int) {
+                tarefaDao.desfinalizarTarefa(doneListAdapter.listaTarefasFeitas[posicao])
+                doneListAdapter.atualizaLista()
+            }
+
+        })
     }
 
     private fun inicializaRecyclerView(view: View) {

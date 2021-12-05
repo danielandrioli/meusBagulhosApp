@@ -1,30 +1,68 @@
 package com.dboy.meusbagulhos.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
+import com.dboy.meusbagulhos.auxiliares.DoubleClickListener
 import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
 
-class RViewDoneListAdapter(
-    private val context: Context,
-    private val tarefaDAO: TarefaDAO
-) : RecyclerView.Adapter<RViewDoneListAdapter.MyViewHolder>() {
-    private var listaTarefasFeitas = tarefaDAO.listarDone()
+class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
+    RecyclerView.Adapter<RViewDoneListAdapter.MyViewHolder>() {
+    var listaTarefasFeitas = tarefaDAO.listarDone()
+        private set
+    private lateinit var mListener: OnTarefaListener
+
+    interface OnTarefaListener{
+        fun onTarefaClick(posicao: Int)
+        fun onTarefaLongClick(posicao: Int)
+        fun onTarefaDoubleClick(posicao: Int)
+    }
+
+    fun setOnTarefaClickListener(listener: OnTarefaListener){
+        mListener = listener
+    }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val texto = itemView.findViewById<TextView>(R.id.tarefaFeitaTxt)
+        val dataFinalizada = itemView.findViewById<TextView>(R.id.tarefaFeitaDataTxt)
 
-        fun vincular(tarefa: Tarefa) {
-            val texto = itemView.findViewById<TextView>(R.id.tarefaFeitaTxt)
-            val dataFinalizada = itemView.findViewById<TextView>(R.id.tarefaFeitaDataTxt)
-
+        fun vincularTexto(tarefa: Tarefa) {
             texto.text = tarefa.texto
             dataFinalizada.text = "${context.getText(R.string.tarefaProntaEm)} ${tarefa.dataFinalizacao}"
+        }
+
+        init {
+            itemView.setOnClickListener(object : DoubleClickListener(){
+                override fun onDoubleClick() {
+                    val posicao = adapterPosition
+                    if (posicao != RecyclerView.NO_POSITION) {
+                        mListener.onTarefaDoubleClick(posicao)
+                        Log.i("doneAdapter", "Double click!")
+                    }
+                }
+                override fun onSingleClick() {
+                    val posicao = adapterPosition
+                    if(posicao != RecyclerView.NO_POSITION){
+                        mListener.onTarefaClick(posicao)
+                        Log.i("doneAdapter", "Single click!")
+                    }
+                }
+            })
+
+            itemView.setOnLongClickListener {
+                val posicao = adapterPosition
+                if(posicao != RecyclerView.NO_POSITION){
+                    mListener.onTarefaLongClick(posicao)
+                    Log.i("doneAdapter", "Long click!")
+                }
+                true
+            }
         }
     }
 
@@ -36,7 +74,7 @@ class RViewDoneListAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val tarefa = listaTarefasFeitas[position]
-        holder.vincular(tarefa)
+        holder.vincularTexto(tarefa)
     }
 
     override fun getItemCount(): Int {
