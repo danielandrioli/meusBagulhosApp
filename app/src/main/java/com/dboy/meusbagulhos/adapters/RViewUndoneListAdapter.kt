@@ -15,7 +15,7 @@ import com.dboy.meusbagulhos.models.Tarefa
 
 class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
     RecyclerView.Adapter<RViewUndoneListAdapter.MeuViewHolder>() {
-    var listaTarefas = tarefaDAO.listarUndone().reversed()
+    var listaTarefas = tarefaDAO.listar(false).reversed()
         private set
     private lateinit var mListener: OnTarefaListener
 
@@ -36,7 +36,7 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
 
         fun vincularTexto(tarefa: Tarefa) {
             textoTarefa.text = tarefa.texto
-            dataTarefa.text = if (tarefa.dataEdicao != null){
+            dataTarefa.text = if (tarefa.dataEdicao.isNotBlank()){
                 "${context.getText(R.string.tarefaEditadaEm)} ${tarefa.dataEdicao}"
             }else{
                 "${context.getText(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"
@@ -81,7 +81,7 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
     }
 
     fun atualizarLista(){
-        listaTarefas = tarefaDAO.listarUndone().reversed()
+        listaTarefas = tarefaDAO.listar(false).reversed()
         notifyDataSetChanged()
     }
 

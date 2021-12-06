@@ -4,12 +4,12 @@ import java.io.Serializable
 import java.text.DateFormat
 import java.util.*
 
-class Tarefa(var texto: String): Serializable{
+class Tarefa(var texto: String): Serializable{//nem precisa do Serializable
     var dataCriacao: String = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
         private set
-    var dataEdicao: String? = null
+    var dataEdicao: String = ""
         private set
-    var dataFinalizacao: String? = null
+    var dataFinalizacao: String = ""
         private set
     var isFinalizado: Boolean = false
         private set
@@ -19,7 +19,7 @@ class Tarefa(var texto: String): Serializable{
     var positionDone: Int = -1
 
     constructor(id: Int, texto: String, dataCriacao: String,
-                isFinalizado: Boolean = false, dataEdicao: String? = null, dataFinalizacao: String? = null,
+                isFinalizado: Boolean = false, dataEdicao: String = "", dataFinalizacao: String = "",
                 positionUndone: Int = -1, positionDone: Int = -1): this(texto){
         this.dataCriacao = dataCriacao
         this.dataEdicao = dataEdicao

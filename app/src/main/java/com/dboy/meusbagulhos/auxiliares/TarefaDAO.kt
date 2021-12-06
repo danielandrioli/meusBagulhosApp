@@ -15,16 +15,20 @@ class TarefaDAO(context: Context) {
     private val dbHelper: DbHelper = DbHelper(context)
     private val escreve: SQLiteDatabase = dbHelper.writableDatabase
     private val le: SQLiteDatabase = dbHelper.readableDatabase
+    private val contadorUndone get() = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
+            " isFinalizado=?", arrayOf("0")).toInt()
+    private val contadorDone get() = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
+            " isFinalizado=?", arrayOf("1")).toInt()
 
     fun criarTarefa(tarefa: Tarefa): Boolean{
         val cv = ContentValues()
         cv.put("texto", tarefa.texto)
         cv.put("dataCriacao", tarefa.dataCriacao)
         cv.put("isFinalizado", false)
-        //da pra colocar o contadorUndone e done como property e manipular seu get()
-        val contadorUndone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
-                " isFinalizado=?", arrayOf("0")).toInt()
         cv.put("positionUndone", contadorUndone)
+        cv.put("dataFinalizacao", "")
+        cv.put("dataEdicao", "")
+        cv.put("positionDone", -1)
 
         try{
             escreve.insert(DbHelper.nomeTabelaTarefas, null, cv)
@@ -36,28 +40,8 @@ class TarefaDAO(context: Context) {
         return false
     }
 
-    fun atualizarTexto(tarefa: Tarefa): Boolean{ //SÓ PODE ATUALIZAR TEXTO DE TAREFAS UNDONE
-        val cv = ContentValues()
-        val dataEdicao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
-        cv.put("texto", tarefa.texto)
-        cv.put("dataEdicao", dataEdicao)
-
-        try {
-            val args = arrayOf(tarefa.id.toString())
-            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
-        }catch (e: Exception){
-            Log.i(tagLogTarefaDAO, "Erro ao atualizar tarefa: $e")
-            return false
-        }
-        return true
-    }
-
     fun deletar(tarefa: Tarefa): Boolean{
-        if (tarefa.isFinalizado){
-            removePosicaoListaDone(tarefa)
-        }else{
-            removePosicaoListaUndone(tarefa)
-        }
+        removePosicaoDaLista(tarefa)
 
         try {
             val args = arrayOf(tarefa.id.toString())
@@ -69,130 +53,82 @@ class TarefaDAO(context: Context) {
         return true
     }
 
-    fun finalizarTarefa(tarefa: Tarefa): Boolean{
+    private fun atualizaTarefaNaTabela(tarefa: Tarefa, cv: ContentValues, motivo: String = ""){
+        try {
+            val args = arrayOf(tarefa.id.toString())
+            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
+
+            Log.i(tagLogTarefaDAO, "Sucesso ao atualizar | $motivo")
+        }catch (e: Exception){
+            Log.i(tagLogTarefaDAO, "Erro ao atualizar | $motivo\nErro: $e")
+        }
+    }
+
+    fun atualizarTexto(tarefa: Tarefa){ //SÓ PODE ATUALIZAR TEXTO DE TAREFAS UNDONE
+        val cv = ContentValues()
+        val dataEdicao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
+        cv.put("texto", tarefa.texto)
+        cv.put("dataEdicao", dataEdicao)
+
+        atualizaTarefaNaTabela(tarefa, cv, "Atualizar texto tarefa id ${tarefa.id}")
+    }
+
+    fun finalizarTarefa(tarefa: Tarefa){
         val cv = ContentValues()
         val dataFinalizacao = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
-        val contadorDone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
-                " isFinalizado=?", arrayOf("1")).toInt()
 
         cv.put("dataFinalizacao", dataFinalizacao)
         cv.put("isFinalizado", true)
         cv.put("positionDone", contadorDone)
         cv.put("positionUndone", -1)
 
-        Log.i(tagLogTarefaDAO, "Resultado do count done: $contadorDone")
-
-        removePosicaoListaUndone(tarefa)
-
-        try {
-            val args = arrayOf(tarefa.id.toString())
-            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
-            Log.i(tagLogTarefaDAO, "Tarefa de id ${tarefa.id} finalizada!")
-        }catch (e: Exception){
-            Log.i(tagLogTarefaDAO, "Erro ao atualizar finalização da tarefa: $e")
-            return false
-        }
-        return true
+        removePosicaoDaLista(tarefa)
+        atualizaTarefaNaTabela(tarefa, cv, "Finalizar tarefa id ${tarefa.id}")
     }
 
-    private fun removePosicaoListaUndone(tarefa: Tarefa){
-        val listaUndone = listarUndone() as MutableList
-        listaUndone.removeAt(tarefa.positionUndone) //O objetivo de deletar da lista é apenas se guiar melhor pelo índice
-
-        for((indice, tarefa) in listaUndone.withIndex()){
-            tarefa.positionUndone = indice
-            atualizaPosicao(tarefa)
-        }
-    }
-
-    private fun atualizaPosicao(tarefa: Tarefa){
+    fun desfinalizarTarefa(tarefa: Tarefa){
         val cv = ContentValues()
-        cv.put("positionUndone", tarefa.positionUndone)
-        cv.put("positionDone", tarefa.positionDone)
-
-        try {
-            val args = arrayOf(tarefa.id.toString())
-            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
-        }catch (e: Exception){
-            Log.i(tagLogTarefaDAO, "Erro ao atualizar posições: $e")
-        }
-    }
-
-    private fun removePosicaoListaDone(tarefa: Tarefa){
-        val listaDone = listarDone() as MutableList
-        listaDone.removeAt(tarefa.positionDone)
-
-        for((indice, tarefa) in listaDone.withIndex()){
-            tarefa.positionDone = indice
-            atualizaPosicao(tarefa) //atualiza cada tarefa restante
-        }
-    }
-
-    fun desfinalizarTarefa(tarefa: Tarefa): Boolean{
-        val cv = ContentValues()
-        val contadorUndone = DatabaseUtils.longForQuery(le, "SELECT COUNT (*) FROM ${DbHelper.nomeTabelaTarefas} WHERE" +
-                " isFinalizado=?", arrayOf("0")).toInt()
 
         cv.put("dataFinalizacao", "")
         cv.put("isFinalizado", false)
         cv.put("positionDone", -1)
         cv.put("positionUndone", contadorUndone)
 
-        Log.i(tagLogTarefaDAO, "Resultado do count undone: $contadorUndone")
+        removePosicaoDaLista(tarefa)
+        atualizaTarefaNaTabela(tarefa, cv, "Desfinalizar tarefa id ${tarefa.id}")
+    }
 
-        removePosicaoListaDone(tarefa)
+    private fun removePosicaoDaLista(tarefa: Tarefa){
+        val lista = listar(tarefa.isFinalizado) as MutableList //recebe a lista done OU undone de acordo com isFinalizado
+        val posicaoTarefa = if (tarefa.isFinalizado) tarefa.positionDone else tarefa.positionUndone
+        lista.removeAt(posicaoTarefa)
+        val isListaDone = tarefa.isFinalizado
 
-        try {
-            val args = arrayOf(tarefa.id.toString())
-            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args)
-            Log.i(tagLogTarefaDAO, "Tarefa de id ${tarefa.id} desfinalizada!")
-        }catch (e: Exception){
-            Log.i(tagLogTarefaDAO, "Erro ao atualizar desfinalização da tarefa: $e")
-            return false
+        for((indice, tarefaItem) in lista.withIndex()){//atualiza cada índice para depois salvar no db
+            if (isListaDone) tarefaItem.positionDone = indice
+            else tarefaItem.positionUndone = indice
+
+            val cv = ContentValues()
+            cv.put("positionUndone", tarefaItem.positionUndone)
+            cv.put("positionDone", tarefaItem.positionDone)
+            atualizaTarefaNaTabela(tarefaItem, cv, "Atualizar posição, id ${tarefaItem.id}")
         }
-        return true
     }
 
     fun trocarPosicao(tarefa: Tarefa, posicaoNova: Int){
         val cv = ContentValues()
-        cv.put("positionUndone", posicaoNova)
+        cv.put("positionUndone", posicaoNova) //troca de posição é feita apenas na lista undone
 
-        try {
-            val args1 = arrayOf(tarefa.id.toString())
-            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args1)
-
-            Log.i(tagLogTarefaDAO, "Troca de posição feita! Id: ${tarefa.id} nova posicao: $posicaoNova")
-        }catch (e: Exception){
-            Log.i(tagLogTarefaDAO, "Erro ao trocar posição: $e")
-        }
-
+        atualizaTarefaNaTabela(tarefa, cv, "Troca de posição id ${tarefa.id}, nova posição $posicaoNova")
     }
 
-//DÁ PARA ARRUMAR BEM ESSE CÓDIGO DESSA CLASSE TAREFADAO. LISTAR DONE E UNDONE PODEM TER UM METODO EM COMUM, ASSIM COMO FINALIZAR E DESFINALIZAR
+    /*Método abaixo lista as tarefas prontas ou não prontas de acordo com o valor booleano passado.*/
+    fun listar(isDone: Boolean): List<Tarefa>{
+        val isFinalizado = if(isDone) 1 else 0
+        val position = if(isDone) "positionDone" else "positionUndone"
 
-    fun listarUndone(): List<Tarefa>{
-        Log.i(tagLogTarefaDAO, "Listando undone")
         val listaTarefa = mutableListOf<Tarefa>()
-        val sql = "SELECT * FROM ${DbHelper.nomeTabelaTarefas} WHERE isFinalizado = 0 ORDER BY positionUndone;"
-        val cursor: Cursor = le.rawQuery(sql, null)
-
-        while(cursor.moveToNext()){
-            val id: Int = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-            val texto: String = cursor.getString(cursor.getColumnIndexOrThrow("texto"))
-            val dataCriacao: String = cursor.getString(cursor.getColumnIndexOrThrow("dataCriacao"))
-            val dataEdicao: String? = cursor.getString(cursor.getColumnIndexOrThrow("dataEdicao"))
-            val positionUndone: Int = cursor.getInt(cursor.getColumnIndexOrThrow("positionUndone"))
-
-            val tarefa = Tarefa(id, texto, dataCriacao, dataEdicao = dataEdicao, positionUndone = positionUndone)
-            listaTarefa.add(tarefa)
-        }
-        return listaTarefa
-    }
-
-    fun listarDone(): List<Tarefa>{
-        Log.i(tagLogTarefaDAO, "Listando done")
-        val listaTarefa = mutableListOf<Tarefa>()
-        val sql = "SELECT * FROM ${DbHelper.nomeTabelaTarefas} WHERE isFinalizado = 1 ORDER BY positionDone;"
+        val sql = "SELECT * FROM ${DbHelper.nomeTabelaTarefas} WHERE isFinalizado = $isFinalizado ORDER BY $position;"
         val cursor: Cursor = le.rawQuery(sql, null)
 
         while(cursor.moveToNext()){
@@ -200,11 +136,13 @@ class TarefaDAO(context: Context) {
             val texto: String = cursor.getString(cursor.getColumnIndexOrThrow("texto"))
             val dataCriacao: String = cursor.getString(cursor.getColumnIndexOrThrow("dataCriacao"))
             val dataFinalizacao: String = cursor.getString(cursor.getColumnIndexOrThrow("dataFinalizacao"))
-            val dataEdicao: String? = cursor.getString(cursor.getColumnIndexOrThrow("dataEdicao"))
+            val dataEdicao: String = cursor.getString(cursor.getColumnIndexOrThrow("dataEdicao"))
             val positionDone: Int = cursor.getInt(cursor.getColumnIndexOrThrow("positionDone"))
+            val positionUndone: Int = cursor.getInt(cursor.getColumnIndexOrThrow("positionUndone"))
+
 
             val tarefa = Tarefa(id, texto, dataCriacao, dataEdicao = dataEdicao, positionDone = positionDone,
-            isFinalizado = true, dataFinalizacao = dataFinalizacao)
+                isFinalizado = isDone, dataFinalizacao = dataFinalizacao, positionUndone = positionUndone)
             listaTarefa.add(tarefa)
         }
         return listaTarefa
