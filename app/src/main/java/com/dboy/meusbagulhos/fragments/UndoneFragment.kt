@@ -79,7 +79,7 @@ class UndoneFragment : Fragment() {
         recyclerView.adapter = undoneAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val itemTouchHelper = ItemTouchHelper(SwipeGesture())
+        val itemTouchHelper = ItemTouchHelper(SwipeGesture(tarefaDao, undoneAdapter))
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 

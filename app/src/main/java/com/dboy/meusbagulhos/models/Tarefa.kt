@@ -31,6 +31,6 @@ class Tarefa(var texto: String): Serializable{
     }
 
     override fun toString(): String {
-        return "id: $id - posU: $positionUndone - $texto"
+        return "id: $id - posU: $positionUndone - posD: $positionDone -\ntexto: $texto"
     }
 }

@@ -122,9 +122,9 @@ class TarefaDAO(context: Context) {
         val listaDone = listarDone() as MutableList
         listaDone.removeAt(tarefa.positionDone)
 
-        for((indice, tarefa) in listarDone().withIndex()){
+        for((indice, tarefa) in listaDone.withIndex()){
             tarefa.positionDone = indice
-            atualizaPosicao(tarefa)
+            atualizaPosicao(tarefa) //atualiza cada tarefa restante
         }
     }
 
@@ -151,6 +151,21 @@ class TarefaDAO(context: Context) {
             return false
         }
         return true
+    }
+
+    fun trocarPosicao(tarefa: Tarefa, posicaoNova: Int){
+        val cv = ContentValues()
+        cv.put("positionUndone", posicaoNova)
+
+        try {
+            val args1 = arrayOf(tarefa.id.toString())
+            escreve.update(DbHelper.nomeTabelaTarefas, cv, "id=?", args1)
+
+            Log.i(tagLogTarefaDAO, "Troca de posição feita! Id: ${tarefa.id} nova posicao: $posicaoNova")
+        }catch (e: Exception){
+            Log.i(tagLogTarefaDAO, "Erro ao trocar posição: $e")
+        }
+
     }
 
 //DÁ PARA ARRUMAR BEM ESSE CÓDIGO DESSA CLASSE TAREFADAO. LISTAR DONE E UNDONE PODEM TER UM METODO EM COMUM, ASSIM COMO FINALIZAR E DESFINALIZAR

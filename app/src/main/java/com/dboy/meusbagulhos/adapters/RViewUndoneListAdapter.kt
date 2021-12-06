@@ -44,7 +44,7 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
         }
 
         init {//DA PARA COLOCAR O CLICKLISTENER NO ITEMVIEW. AÍ PEGA T0DO ELE, COM EXCEÇÃO DO DRAG Q VAI TER SEU PROPRIO LISTENER
-            textoTarefa.setOnClickListener(object : DoubleClickListener(){
+            itemView.setOnClickListener(object : DoubleClickListener(){
                 override fun onDoubleClick() {
                     val posicao = adapterPosition
                     if(posicao != RecyclerView.NO_POSITION){

@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
-    android:background="@color/white"
-    android:foreground="?attr/selectableItemBackground"
-    >
+    android:background="@color/my_background">
 
     <TextView
         android:id="@+id/tarefaNao_aFazer_txt"
