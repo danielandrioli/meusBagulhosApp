@@ -6,11 +6,14 @@
     <string name="tarefaProntaEm">Done in</string>
     <string name="dialogTarefaEscrever">Type your to do...</string>
     <string name="dialogTarefaLinha">Line</string>
-    <string name="aDialogMessage">Changes have not been saved. Do you want to discard it?</string>
+    <string name="aDialogMessageChanges">Changes have not been saved. Do you want to discard it?</string>
     <string name="aDialogTitle">Warning!</string>
     <string name="aDialogYes">Yes</string>
     <string name="aDialogNo">No</string>
     <string name="aDialogTaskCreated">Task created!</string>
     <string name="tarefaCriadaEm">Created in</string>
     <string name="tarefaEditadaEm">Last edit</string>
+    <string name="aDialogMessageDelete">Are you sure you want to delete it?</string>
+    <string name="aDialogTaskEdited">Task edited!</string>
+    <string name="aDialogTaskDeleted">Task deleted!</string>
 </resources>

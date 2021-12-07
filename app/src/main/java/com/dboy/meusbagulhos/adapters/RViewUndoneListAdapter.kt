@@ -21,8 +21,8 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
 
     interface OnTarefaListener{
         fun onTarefaClick(posicao: Int)
-        fun onTarefaLongClick(posicao: Int)
         fun onTarefaDoubleClick(posicao: Int)
+        //        fun onTarefaLongClick(posicao: Int)
     }
 
     fun setOnTarefaClickListener(listener: OnTarefaListener){
@@ -43,7 +43,7 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
             }
         }
 
-        init {//DA PARA COLOCAR O CLICKLISTENER NO ITEMVIEW. AÍ PEGA T0DO ELE, COM EXCEÇÃO DO DRAG Q VAI TER SEU PROPRIO LISTENER
+        init {
             itemView.setOnClickListener(object : DoubleClickListener(){
                 override fun onDoubleClick() {
                     val posicao = adapterPosition
@@ -62,7 +62,6 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
                 }
             })
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MeuViewHolder {
@@ -84,5 +83,4 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
         listaTarefas = tarefaDAO.listar(false).reversed()
         notifyDataSetChanged()
     }
-
 }

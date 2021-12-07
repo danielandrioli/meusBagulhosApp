@@ -3,14 +3,17 @@
     <string name="app_name">Meus bagulhos</string>
     <string name="tabDone">FEITO</string>
     <string name="tabUndone">A FAZER</string>
-    <string name="tarefaProntaEm">Feito em</string>
+    <string name="tarefaProntaEm">Finalizada em</string>
     <string name="dialogTarefaEscrever">Digite sua tarefa...</string>
     <string name="dialogTarefaLinha">Linha</string>
-    <string name="aDialogMessage">As alterações não foram salvas. Deseja descartá-las?</string>
+    <string name="aDialogMessageChanges">As alterações não foram salvas. Deseja descartá-las?</string>
     <string name="aDialogTitle">Atenção!</string>
     <string name="aDialogYes">Sim</string>
     <string name="aDialogNo">Não</string>
     <string name="aDialogTaskCreated">Tarefa criada!</string>
     <string name="tarefaCriadaEm">Criada em</string>
-    <string name="tarefaEditadaEm">Editada em</string>
+    <string name="tarefaEditadaEm">Última edição</string>
+    <string name="aDialogMessageDelete">Tem certeza que deseja deletar essa tarefa?</string>
+    <string name="aDialogTaskEdited">Tarefa editada!</string>
+    <string name="aDialogTaskDeleted">Tarefa deletada!</string>
 </resources>

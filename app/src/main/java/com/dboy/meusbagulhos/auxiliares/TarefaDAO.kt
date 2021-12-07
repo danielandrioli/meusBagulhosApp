@@ -115,9 +115,9 @@ class TarefaDAO(context: Context) {
         }
     }
 
-    fun trocarPosicao(tarefa: Tarefa, posicaoNova: Int){
+    fun trocarPosicao(tarefa: Tarefa, posicaoNova: Int){ //troca de posição é feita apenas na lista undone
         val cv = ContentValues()
-        cv.put("positionUndone", posicaoNova) //troca de posição é feita apenas na lista undone
+        cv.put("positionUndone", posicaoNova)
 
         atualizaTarefaNaTabela(tarefa, cv, "Troca de posição id ${tarefa.id}, nova posição $posicaoNova")
     }

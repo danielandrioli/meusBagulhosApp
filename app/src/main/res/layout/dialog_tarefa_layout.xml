@@ -16,6 +16,17 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
+        <TextView
+            android:id="@+id/dialog_txt_created"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="6dp" />
+
         <com.dboy.meusbagulhos.auxiliares.LimitedEditText
             android:id="@+id/dialog_eTxt_tarefa"
             android:layout_width="match_parent"
@@ -62,28 +73,48 @@
 
     <ImageButton
         android:id="@+id/dialog_img_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="-4dp"
+        android:background="@drawable/circular_btn"
         app:layout_constraintBottom_toTopOf="@+id/dialog_relative_layout"
         app:layout_constraintEnd_toEndOf="@+id/dialog_relative_layout"
+        app:layout_constraintStart_toEndOf="@+id/dialog_relative_layout"
         app:srcCompat="@drawable/ic_close_24" />
 
     <ImageButton
         android:id="@+id/dialog_img_check"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/circular_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_relative_layout"
         app:srcCompat="@drawable/ic_check_green_24" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+    <ImageButton
+        android:id="@+id/dialog_img_delete"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="-2dp"
+        android:background="@drawable/circular_btn"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_img_check"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_relative_layout"
+        app:srcCompat="@drawable/ic_delete_26" />
+
+    <ImageButton
+        android:id="@+id/dialog_img_save"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="-2dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/circular_btn"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.5"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/dialog_img_check"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_relative_layout"
+        app:srcCompat="@drawable/ic_save_34"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

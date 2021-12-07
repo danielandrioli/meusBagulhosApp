@@ -85,5 +85,4 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
         listaTarefasFeitas = tarefaDAO.listar(true).reversed()
         notifyDataSetChanged()
     }
-
 }

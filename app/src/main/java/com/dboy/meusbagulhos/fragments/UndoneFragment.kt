@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -58,12 +59,8 @@ class UndoneFragment : Fragment() {
         undoneAdapter = RViewUndoneListAdapter(requireContext(), tarefaDao)
         undoneAdapter.setOnTarefaClickListener(object: OnTarefaListener{
             override fun onTarefaClick(posicao: Int) {
-
-            }
-
-            override fun onTarefaLongClick(posicao: Int) {
-//                TODO("Not yet implemented")
-
+                //MOSTRAR AQUI A TAREFA PARA SER LIDA E EDITADA
+                configuraDialog(undoneAdapter.listaTarefas[posicao])
             }
 
             override fun onTarefaDoubleClick(posicao: Int) {
@@ -90,8 +87,8 @@ class UndoneFragment : Fragment() {
             configuraDialog()
         }
     }
-
-    private fun configuraDialog() {
+/*irei mexer no configuraDialog*/
+    private fun configuraDialog(tarefa: Tarefa? = null) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_tarefa_layout)
         dialog.window?.setBackgroundDrawable(ColorDrawable(0))
@@ -104,12 +101,28 @@ class UndoneFragment : Fragment() {
         val textoTarefa = dialog.findViewById<LimitedEditText>(R.id.dialog_eTxt_tarefa)
         val textoCapacidade = dialog.findViewById<TextView>(R.id.dialog_txt_capacidade)
         val textoLinha = dialog.findViewById<TextView>(R.id.dialog_txt_linhas)
+        val textoCriadoEm = dialog.findViewById<TextView>(R.id.dialog_txt_created)
+        val btnDelete = dialog.findViewById<ImageButton>(R.id.dialog_img_delete)
+        val btnSave = dialog.findViewById<ImageButton>(R.id.dialog_img_save)
 
-        textoLinha.text = "${getString(R.string.dialogTarefaLinha)} 1/${textoTarefa.maxLines}"
+        if (tarefa != null){
+            textoTarefa.setText(tarefa.texto)
+            btnCheck.visibility = View.INVISIBLE
+            textoCapacidade.text = "${textoTarefa.text.toString().length}" +
+                    "/${textoTarefa.maxCharacters}"
+            textoCriadoEm.text = if(tarefa.dataEdicao.isBlank()){
+                "${getString(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"}
+            else{
+                "${getString(R.string.tarefaEditadaEm)}: ${tarefa.dataEdicao}"
+            }
+            btnDelete.visibility = View.VISIBLE
+            btnSave.visibility = View.VISIBLE
+        } else{
+            textoLinha.text = "${getString(R.string.dialogTarefaLinha)} 1/${textoTarefa.maxLines}"
+        }
 
         textoTarefa.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //Texto da capacidade máxima de caracteres. Ex: 21/160
@@ -141,10 +154,11 @@ class UndoneFragment : Fragment() {
         })
 
         btnClose.setOnClickListener {
-            if (textoTarefa.text.toString().isNotEmpty()) {
+            if ((textoTarefa.text.toString().isNotEmpty() && tarefa == null) or
+                (tarefa != null && tarefa.texto != textoTarefa.text.toString())) {
                 AlertDialog.Builder(requireContext())
                     .setTitle(R.string.aDialogTitle)
-                    .setMessage(R.string.aDialogMessage)
+                    .setMessage(R.string.aDialogMessageChanges)
                     .setPositiveButton(R.string.aDialogYes) { _, _ ->
                         dialog.cancel()
                     }
@@ -153,7 +167,7 @@ class UndoneFragment : Fragment() {
                     .show()
             } else dialog.cancel()
         }
-        btnCheck.setOnClickListener { /*ENVIAR TAREFA ESCRITA PARA O BANCO DE DADOS E ATUALIZAR O ADAPTER*/
+        btnCheck.setOnClickListener {
             if(textoTarefa.text.toString().isNotEmpty()){
                 val tarefa = Tarefa(textoTarefa.text.toString())
                 tarefaDao.criarTarefa(tarefa)
@@ -164,7 +178,38 @@ class UndoneFragment : Fragment() {
 
             dialog.cancel()
         }
+
+        btnDelete.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.aDialogTitle)
+                .setMessage(R.string.aDialogMessageDelete)
+                .setPositiveButton(R.string.aDialogYes) { _, _ ->
+                    if (tarefa != null) {
+                        tarefaDao.deletar(tarefa)
+                        undoneAdapter.atualizarLista()
+                    }
+                    dialog.cancel()
+                }
+                .setNegativeButton(R.string.aDialogNo) { _, _ ->
+                }
+                .show()
+        }
+
+        btnSave.setOnClickListener {
+            if(tarefa != null && textoTarefa.text.toString().isBlank()){
+                tarefaDao.deletar(tarefa)
+                undoneAdapter.atualizarLista()
+                Toast.makeText(requireContext(), R.string.aDialogTaskDeleted, Toast.LENGTH_SHORT).show()
+            }
+            else if (tarefa != null && textoTarefa.text.toString() != tarefa.texto){
+                tarefa.texto = textoTarefa.text.toString()
+                tarefaDao.atualizarTexto(tarefa)
+                undoneAdapter.atualizarLista()
+                Toast.makeText(requireContext(), R.string.aDialogTaskEdited, Toast.LENGTH_SHORT).show()
+
+            }
+            dialog.cancel()
+        }
         dialog.show()
     }
-
 }
