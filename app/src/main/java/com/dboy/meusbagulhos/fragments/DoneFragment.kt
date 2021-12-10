@@ -1,9 +1,14 @@
 package com.dboy.meusbagulhos.fragments
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,7 +47,7 @@ class DoneFragment : Fragment() {
         doneListAdapter = RViewDoneListAdapter(requireContext(), tarefaDao)
         doneListAdapter.setOnTarefaClickListener(object: RViewDoneListAdapter.OnTarefaListener{
             override fun onTarefaClick(posicao: Int) {
-//                TODO("Not yet implemented")
+                configuraDialog(doneListAdapter.listaTarefasFeitas[posicao])
             }
 
             override fun onTarefaLongClick(posicao: Int) {
@@ -61,5 +66,51 @@ class DoneFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.doneFragRecycler)
         recyclerView.adapter = doneListAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun configuraDialog(tarefa: Tarefa) {
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(R.layout.dialog_tarefadone_layout)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(0))
+        dialog.window?.setWindowAnimations(R.style.AnimacoesDialog)
+
+        val btnClose = dialog.findViewById<ImageButton>(R.id.dialog_done_img_close)
+        val btnDelete = dialog.findViewById<ImageButton>(R.id.dialog_done_img_delete)
+        val btnUndo = dialog.findViewById<ImageButton>(R.id.dialog_done_img_desfazer)
+        val txtTarefa = dialog.findViewById<TextView>(R.id.dialog_done_txt)
+        val txtCriadoEm = dialog.findViewById<TextView>(R.id.dialog_done_txt_created)
+        val txtFinalizadoEm = dialog.findViewById<TextView>(R.id.dialog_done_finished)
+
+        txtTarefa.text = tarefa.texto
+        txtCriadoEm.text = "${getString(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"
+        txtFinalizadoEm.text = "${getString(R.string.tarefaProntaEm)} ${tarefa.dataFinalizacao}"
+
+        btnDelete.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.aDialogTitle)
+                .setMessage(R.string.aDialogMessageDelete)
+                .setPositiveButton(R.string.aDialogYes) { _, _ ->
+                    if (tarefa != null) {
+                        tarefaDao.deletar(tarefa)
+                        doneListAdapter.atualizaLista()
+                    }
+                    dialog.cancel()
+                }
+                .setNegativeButton(R.string.aDialogNo) { _, _ ->
+                }
+                .show()
+        }
+
+        btnClose.setOnClickListener {
+            dialog.cancel()
+        }
+
+        btnUndo.setOnClickListener {
+            tarefaDao.desfinalizarTarefa(tarefa)
+            dialog.cancel()
+            doneListAdapter.atualizaLista()
+        }
+
+        dialog.show()
     }
 }

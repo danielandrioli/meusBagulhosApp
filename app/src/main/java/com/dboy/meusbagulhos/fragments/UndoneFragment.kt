@@ -2,19 +2,20 @@ package com.dboy.meusbagulhos.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,9 +56,9 @@ class UndoneFragment : Fragment() {
         undoneAdapter.atualizarLista() //ARRUMAR ISSO AQUI. QUANDO INICIALIZA O APP, TÁ CHAMANDO DUAS VEZES O ATUALIZA PQ APOS O ONCREATE VEM ONRESUME
     }
 
-    private fun configuraAdapter(){
+    private fun configuraAdapter() {
         undoneAdapter = RViewUndoneListAdapter(requireContext(), tarefaDao)
-        undoneAdapter.setOnTarefaClickListener(object: OnTarefaListener{
+        undoneAdapter.setOnTarefaClickListener(object : OnTarefaListener {
             override fun onTarefaClick(posicao: Int) {
                 //MOSTRAR AQUI A TAREFA PARA SER LIDA E EDITADA
                 configuraDialog(undoneAdapter.listaTarefas[posicao])
@@ -87,14 +88,14 @@ class UndoneFragment : Fragment() {
             configuraDialog()
         }
     }
-/*irei mexer no configuraDialog*/
+
     private fun configuraDialog(tarefa: Tarefa? = null) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_tarefa_layout)
         dialog.window?.setBackgroundDrawable(ColorDrawable(0))
         dialog.window?.setWindowAnimations(R.style.AnimacoesDialog)
         dialog.setCanceledOnTouchOutside(false)
-        dialog.setCancelable(false) //Não cancelará ao tocar no botão de voltar do Android
+//        dialog.setCancelable(false) //Não cancelará ao tocar no botão de voltar do Android
 
         val btnClose = dialog.findViewById<ImageButton>(R.id.dialog_img_close)
         val btnCheck = dialog.findViewById<ImageButton>(R.id.dialog_img_check)
@@ -105,19 +106,19 @@ class UndoneFragment : Fragment() {
         val btnDelete = dialog.findViewById<ImageButton>(R.id.dialog_img_delete)
         val btnSave = dialog.findViewById<ImageButton>(R.id.dialog_img_save)
 
-        if (tarefa != null){
+        if (tarefa != null) {
             textoTarefa.setText(tarefa.texto)
             btnCheck.visibility = View.INVISIBLE
             textoCapacidade.text = "${textoTarefa.text.toString().length}" +
                     "/${textoTarefa.maxCharacters}"
-            textoCriadoEm.text = if(tarefa.dataEdicao.isBlank()){
-                "${getString(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"}
-            else{
+            textoCriadoEm.text = if (tarefa.dataEdicao.isBlank()) {
+                "${getString(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"
+            } else {
                 "${getString(R.string.tarefaEditadaEm)}: ${tarefa.dataEdicao}"
             }
             btnDelete.visibility = View.VISIBLE
             btnSave.visibility = View.VISIBLE
-        } else{
+        } else {
             textoLinha.text = "${getString(R.string.dialogTarefaLinha)} 1/${textoTarefa.maxLines}"
         }
 
@@ -129,13 +130,14 @@ class UndoneFragment : Fragment() {
                 textoCapacidade.text = "${p0?.length}" +
                         "/${textoTarefa.maxCharacters}"
                 //Texto da capacidade de linhas. Ex: 5/7
-                textoLinha.text = "${getString(R.string.dialogTarefaLinha)} ${textoTarefa.lineCount}" +
-                        "/${textoTarefa.maxLines}"
+                textoLinha.text =
+                    "${getString(R.string.dialogTarefaLinha)} ${textoTarefa.lineCount}" +
+                            "/${textoTarefa.maxLines}"
 
                 //Cor da capacidade máxima de caracteres. Vermelho para máxima capacidade.
                 if (p0?.length == textoTarefa.maxCharacters) textoCapacidade.setTextColor(
                     Color.parseColor(
-                        "#FF0000"
+                        "#FF0000" //red
                     )
                 )
                 else textoCapacidade.setTextColor(Color.parseColor("#FF323232"))
@@ -143,7 +145,7 @@ class UndoneFragment : Fragment() {
                 //Cor da capacidade máxima de linhas. Vermelho para máxima capacidade.
                 if (textoTarefa.lineCount == textoTarefa.maxLines) textoLinha.setTextColor(
                     Color.parseColor(
-                        "#FF0000"
+                        "#FF0000" //red
                     )
                 )
                 else textoLinha.setTextColor(Color.parseColor("#FF323232"))
@@ -153,9 +155,32 @@ class UndoneFragment : Fragment() {
             }
         })
 
+        dialog.setOnKeyListener(object : DialogInterface.OnKeyListener { //overrides back pressing
+            override fun onKey(p0: DialogInterface?, p1: Int, p2: KeyEvent?): Boolean {
+                if (p2 != null && p2.action != KeyEvent.ACTION_DOWN) {
+                    return true //onKey method is always called twice. This return prevents the second AlertDialog.Builder call.
+                }
+                if ((textoTarefa.text.toString().isNotEmpty() && tarefa == null) or
+                    (tarefa != null && tarefa.texto != textoTarefa.text.toString())
+                ) {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.aDialogTitle)
+                        .setMessage(R.string.aDialogMessageChanges)
+                        .setPositiveButton(R.string.aDialogYes) { _, _ ->
+                            dialog.cancel()
+                        }
+                        .setNegativeButton(R.string.aDialogNo) { _, _ ->
+                        }
+                        .show()
+                } else dialog.cancel()
+                return p1 == KeyEvent.KEYCODE_BACK
+            }
+        })
+
         btnClose.setOnClickListener {
             if ((textoTarefa.text.toString().isNotEmpty() && tarefa == null) or
-                (tarefa != null && tarefa.texto != textoTarefa.text.toString())) {
+                (tarefa != null && tarefa.texto != textoTarefa.text.toString())
+            ) {
                 AlertDialog.Builder(requireContext())
                     .setTitle(R.string.aDialogTitle)
                     .setMessage(R.string.aDialogMessageChanges)
@@ -168,14 +193,14 @@ class UndoneFragment : Fragment() {
             } else dialog.cancel()
         }
         btnCheck.setOnClickListener {
-            if(textoTarefa.text.toString().isNotEmpty()){
+            if (textoTarefa.text.toString().isNotEmpty()) {
                 val tarefa = Tarefa(textoTarefa.text.toString())
                 tarefaDao.criarTarefa(tarefa)
                 undoneAdapter.atualizarLista()
 
-                Toast.makeText(requireContext(), R.string.aDialogTaskCreated, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.aDialogTaskCreated, Toast.LENGTH_SHORT)
+                    .show()
             }
-
             dialog.cancel()
         }
 
@@ -196,17 +221,17 @@ class UndoneFragment : Fragment() {
         }
 
         btnSave.setOnClickListener {
-            if(tarefa != null && textoTarefa.text.toString().isBlank()){
+            if (tarefa != null && textoTarefa.text.toString().isBlank()) {
                 tarefaDao.deletar(tarefa)
                 undoneAdapter.atualizarLista()
-                Toast.makeText(requireContext(), R.string.aDialogTaskDeleted, Toast.LENGTH_SHORT).show()
-            }
-            else if (tarefa != null && textoTarefa.text.toString() != tarefa.texto){
+                Toast.makeText(requireContext(), R.string.aDialogTaskDeleted, Toast.LENGTH_SHORT)
+                    .show()
+            } else if (tarefa != null && textoTarefa.text.toString() != tarefa.texto) {
                 tarefa.texto = textoTarefa.text.toString()
                 tarefaDao.atualizarTexto(tarefa)
                 undoneAdapter.atualizarLista()
-                Toast.makeText(requireContext(), R.string.aDialogTaskEdited, Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(requireContext(), R.string.aDialogTaskEdited, Toast.LENGTH_SHORT)
+                    .show()
             }
             dialog.cancel()
         }
