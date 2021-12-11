@@ -1,6 +1,8 @@
 package com.dboy.meusbagulhos.adapters
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +19,14 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
     var listaTarefasFeitas = tarefaDAO.listar(true).reversed()
         private set
     private lateinit var mListener: OnTarefaListener
+    var isSelectedMode = false
+    val listSelectedTasks = mutableListOf<Tarefa>()
 
     interface OnTarefaListener{
         fun onTarefaClick(posicao: Int)
         fun onTarefaLongClick(posicao: Int)
         fun onTarefaDoubleClick(posicao: Int)
+        fun hideButtons()
     }
 
     fun setOnTarefaClickListener(listener: OnTarefaListener){
@@ -34,14 +39,30 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
 
         fun vincularTexto(tarefa: Tarefa) {
             texto.text = tarefa.texto
+//            texto.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             dataFinalizada.text = "${context.getText(R.string.tarefaProntaEm)} ${tarefa.dataFinalizacao}"
+            itemView.setBackgroundColor(Color.TRANSPARENT)
+        }
+
+        fun selectItem(position: Int){
+            val tarefa = listaTarefasFeitas[position]
+            if(listSelectedTasks.contains(tarefa)){
+                itemView.setBackgroundColor(Color.TRANSPARENT)
+                listSelectedTasks.remove(tarefa)
+            }else{
+                itemView.setBackgroundResource(R.color.selected_background)
+                listSelectedTasks.add(tarefa)
+            }
+            if (listSelectedTasks.size == 0) isSelectedMode = false
+            Log.i("done adapter", "Lista selected tasks: $listSelectedTasks")
         }
 
         init {
+//            mListener.hideButtons()
             itemView.setOnClickListener(object : DoubleClickListener(){
                 override fun onDoubleClick() {
                     val posicao = adapterPosition
-                    if (posicao != RecyclerView.NO_POSITION) {
+                    if (posicao != RecyclerView.NO_POSITION && !isSelectedMode) {
                         mListener.onTarefaDoubleClick(posicao)
                         Log.i("doneAdapter", "Double click!")
                     }
@@ -49,7 +70,10 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
                 override fun onSingleClick() {
                     val posicao = adapterPosition
                     if(posicao != RecyclerView.NO_POSITION){
-                        mListener.onTarefaClick(posicao)
+                        if(isSelectedMode){
+                            selectItem(posicao)
+                            if(!isSelectedMode) mListener.hideButtons()
+                        } else mListener.onTarefaClick(posicao)
                         Log.i("doneAdapter", "Single click!")
                     }
                 }
@@ -58,6 +82,9 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
             itemView.setOnLongClickListener {
                 val posicao = adapterPosition
                 if(posicao != RecyclerView.NO_POSITION){
+                    isSelectedMode = true
+                    selectItem(posicao)
+
                     mListener.onTarefaLongClick(posicao)
                     Log.i("doneAdapter", "Long click!")
                 }

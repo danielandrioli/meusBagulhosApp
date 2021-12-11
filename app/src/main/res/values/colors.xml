@@ -10,4 +10,5 @@
     <color name="red">#FF0000</color>
     <color name="cinza_escuro">#FF323232</color>
     <color name="my_background">#FFFFFFFF</color>
+    <color name="selected_background">#4F34E4F4</color>
 </resources>

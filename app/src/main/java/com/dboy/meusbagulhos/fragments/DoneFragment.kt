@@ -16,10 +16,13 @@ import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.RViewDoneListAdapter
 import com.dboy.meusbagulhos.auxiliares.TarefaDAO
 import com.dboy.meusbagulhos.models.Tarefa
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class DoneFragment : Fragment() {
     private lateinit var tarefaDao: TarefaDAO
     private lateinit var doneListAdapter: RViewDoneListAdapter
+    private lateinit var fabDel: FloatingActionButton
+    private lateinit var fabUndo: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +35,20 @@ class DoneFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_done, container, false)
 
         tarefaDao = TarefaDAO(requireContext())
+        configuraBotoesFab(view)
         configuraAdapter()
         inicializaRecyclerView(view)
 
         return view
+    }
+
+    private fun configuraBotoesFab(view: View?) {
+        if (view != null) {
+            fabDel = view.findViewById<FloatingActionButton>(R.id.doneFabDel)
+            fabUndo = view.findViewById<FloatingActionButton>(R.id.doneFabUndo)
+            //PROBLEMA: QUANDO TROCA DE TAB, OS BOTOES CONTINUAM VISIVEIS. TALVEZ PQ O isSelectedMode continue true. Ver isso
+            //DAR OVERRIDE NO MÉTODO DE VOLTAR E COLOCAR ISSELECTEDMODE COMO FALSE. ai chamar o checaSelecao no onResume?
+        }
     }
 
     override fun onResume() {
@@ -43,15 +56,32 @@ class DoneFragment : Fragment() {
         doneListAdapter.atualizaLista()
     }
 
+    private fun checaSelecao() {
+        if (doneListAdapter.isSelectedMode) {
+            fabDel.visibility = FloatingActionButton.VISIBLE
+            fabUndo.visibility = FloatingActionButton.VISIBLE
+        }else{
+            fabDel.visibility = FloatingActionButton.INVISIBLE
+            fabUndo.visibility = FloatingActionButton.INVISIBLE
+        }
+    }
+
+    override fun onPause() {
+        doneListAdapter.isSelectedMode = false
+        doneListAdapter.listSelectedTasks.clear()
+        hideButtonsFab()
+        super.onPause()
+    }
+
     private fun configuraAdapter() {
         doneListAdapter = RViewDoneListAdapter(requireContext(), tarefaDao)
-        doneListAdapter.setOnTarefaClickListener(object: RViewDoneListAdapter.OnTarefaListener{
+        doneListAdapter.setOnTarefaClickListener(object : RViewDoneListAdapter.OnTarefaListener {
             override fun onTarefaClick(posicao: Int) {
                 configuraDialog(doneListAdapter.listaTarefasFeitas[posicao])
             }
 
             override fun onTarefaLongClick(posicao: Int) {
-//                TODO("Not yet implemented")
+                checaSelecao()
             }
 
             override fun onTarefaDoubleClick(posicao: Int) {
@@ -59,7 +89,15 @@ class DoneFragment : Fragment() {
                 doneListAdapter.atualizaLista()
             }
 
+            override fun hideButtons() {
+                hideButtonsFab()
+            }
         })
+    }
+
+    fun hideButtonsFab(){
+        fabDel.visibility = FloatingActionButton.INVISIBLE
+        fabUndo.visibility = FloatingActionButton.INVISIBLE
     }
 
     private fun inicializaRecyclerView(view: View) {
