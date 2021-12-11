@@ -21,7 +21,7 @@ abstract class DoubleClickListener : View.OnClickListener {
     abstract fun onSingleClick()
 
     companion object {
-        private const val DEFAULT_QUALIFICATION_SPAN: Long = 300 //configurar aqui o tempo!
+        private const val DEFAULT_QUALIFICATION_SPAN: Long = 250 //configurar aqui o tempo!
     }
 
     init {

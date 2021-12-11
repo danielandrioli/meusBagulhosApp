@@ -46,9 +46,37 @@ class DoneFragment : Fragment() {
         if (view != null) {
             fabDel = view.findViewById<FloatingActionButton>(R.id.doneFabDel)
             fabUndo = view.findViewById<FloatingActionButton>(R.id.doneFabUndo)
-            //PROBLEMA: QUANDO TROCA DE TAB, OS BOTOES CONTINUAM VISIVEIS. TALVEZ PQ O isSelectedMode continue true. Ver isso
-            //DAR OVERRIDE NO MÉTODO DE VOLTAR E COLOCAR ISSELECTEDMODE COMO FALSE. ai chamar o checaSelecao no onResume?
         }
+
+        fabDel.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.aDialogTitle)
+                .setMessage(R.string.aDialogMessageDelete)
+                .setPositiveButton(R.string.aDialogYes) { _, _ ->
+                    for (tarefa in doneListAdapter.listSelectedTasks) {
+                        tarefaDao.deletar(tarefa)
+                    }
+                    clearSelectedList()
+                    doneListAdapter.atualizaLista()
+                }
+                .setNegativeButton(R.string.aDialogNo) { _, _ ->
+                }
+                .show()
+        }
+
+        fabUndo.setOnClickListener {
+            for (tarefa in doneListAdapter.listSelectedTasks) {
+                tarefaDao.desfinalizarTarefa(tarefa)
+            }
+            clearSelectedList()
+            doneListAdapter.atualizaLista()
+        }
+    }
+
+    private fun clearSelectedList() {
+        doneListAdapter.isSelectedMode = false
+        doneListAdapter.listSelectedTasks.clear()
+        hideButtonsFab()
     }
 
     override fun onResume() {
@@ -60,16 +88,14 @@ class DoneFragment : Fragment() {
         if (doneListAdapter.isSelectedMode) {
             fabDel.visibility = FloatingActionButton.VISIBLE
             fabUndo.visibility = FloatingActionButton.VISIBLE
-        }else{
+        } else {
             fabDel.visibility = FloatingActionButton.INVISIBLE
             fabUndo.visibility = FloatingActionButton.INVISIBLE
         }
     }
 
     override fun onPause() {
-        doneListAdapter.isSelectedMode = false
-        doneListAdapter.listSelectedTasks.clear()
-        hideButtonsFab()
+        clearSelectedList()
         super.onPause()
     }
 
@@ -95,7 +121,7 @@ class DoneFragment : Fragment() {
         })
     }
 
-    fun hideButtonsFab(){
+    fun hideButtonsFab() {
         fabDel.visibility = FloatingActionButton.INVISIBLE
         fabUndo.visibility = FloatingActionButton.INVISIBLE
     }

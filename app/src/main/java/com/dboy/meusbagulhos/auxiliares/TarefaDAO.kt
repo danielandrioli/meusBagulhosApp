@@ -100,8 +100,7 @@ class TarefaDAO(context: Context) {
 
     private fun removePosicaoDaLista(tarefa: Tarefa){
         val lista = listar(tarefa.isFinalizado) as MutableList //recebe a lista done OU undone de acordo com isFinalizado
-        val posicaoTarefa = if (tarefa.isFinalizado) tarefa.positionDone else tarefa.positionUndone
-        lista.removeAt(posicaoTarefa)
+        lista.remove(tarefa)
         val isListaDone = tarefa.isFinalizado
 
         for((indice, tarefaItem) in lista.withIndex()){//atualiza cada índice para depois salvar no db
