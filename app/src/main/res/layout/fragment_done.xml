@@ -16,10 +16,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:clickable="true"
         android:visibility="invisible"
+        app:backgroundTint="@color/design_default_color_primary_dark"
+        app:maxImageSize="32dp"
         app:srcCompat="@drawable/ic_delete_26"
+        app:tint="@color/white"
         tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -27,9 +30,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:clickable="true"
         android:visibility="invisible"
+        app:backgroundTint="@color/design_default_color_primary_dark"
+        app:maxImageSize="32dp"
         app:srcCompat="@drawable/ic_undo"
+        app:tint="@color/white"
         tools:visibility="visible" />
 </FrameLayout>

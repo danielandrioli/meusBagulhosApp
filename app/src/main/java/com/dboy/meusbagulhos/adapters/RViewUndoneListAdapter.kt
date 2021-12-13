@@ -32,7 +32,6 @@ class RViewUndoneListAdapter(private val context: Context, private val tarefaDAO
     inner class MeuViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textoTarefa = itemView.findViewById<TextView>(R.id.tarefaNao_aFazer_txt)
         val dataTarefa = itemView.findViewById<TextView>(R.id.tarefaNao_data_txt)
-        val dragButton = itemView.findViewById<ImageView>(R.id.tarefaNao_drag_img)
 
         fun vincularTexto(tarefa: Tarefa) {
             textoTarefa.text = tarefa.texto

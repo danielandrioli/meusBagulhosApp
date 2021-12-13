@@ -14,10 +14,10 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="2"
-        android:paddingEnd="8dp"
+        android:paddingEnd="6dp"
         android:singleLine="false"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/tarefaNao_drag_img"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Fazer isso, aquilo, e isso isso isso" />
@@ -29,17 +29,9 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/tarefaNao_drag_img"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tarefaNao_aFazer_txt"
         tools:text="Criado em: 30 de nov de 2021" />
 
-    <ImageView
-        android:id="@+id/tarefaNao_drag_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_dehaze_26" />
 </androidx.constraintlayout.widget.ConstraintLayout>
