@@ -55,7 +55,7 @@ class DoneFragment : Fragment() {
                         clearSelectedList()
                         doneListAdapter.notifyDataSetChanged()
                     } else {
-                        isEnabled = false
+                        isEnabled = false //se não colocar como false, ocorre stackoverflow
                         requireActivity().onBackPressed()
                     }
                 }
