@@ -1,4 +1,4 @@
-package com.dboy.meusbagulhos.auxiliares
+package com.dboy.meusbagulhos.helpers
 
 import android.os.SystemClock
 import android.view.View
@@ -21,7 +21,7 @@ abstract class DoubleClickListener : View.OnClickListener {
     abstract fun onSingleClick()
 
     companion object {
-        private const val DEFAULT_QUALIFICATION_SPAN: Long = 250 //configurar aqui o tempo!
+        private const val DEFAULT_QUALIFICATION_SPAN: Long = 250 //You should config here the time!
     }
 
     init {

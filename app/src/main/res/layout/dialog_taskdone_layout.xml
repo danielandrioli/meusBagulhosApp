@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
         android:id="@+id/dialog_relative_layout"
@@ -17,62 +17,43 @@
 
 
         <TextView
-            android:id="@+id/dialog_txt_created"
+            android:id="@+id/dialog_done_txt_created"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentTop="false"
             android:layout_marginStart="6dp"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="6dp"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="6dp"
+            tools:text="Criado em 08 dez" />
 
-        <com.dboy.meusbagulhos.auxiliares.LimitedEditText
-            android:id="@+id/dialog_eTxt_tarefa"
+        <TextView
+            android:id="@+id/dialog_done_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/dialog_txt_capacidade"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
             android:layout_marginStart="6dp"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="6dp"
             android:layout_marginBottom="6dp"
-            android:ems="10"
-            android:hint="@string/dialogTarefaEscrever"
-            android:inputType="textMultiLine|text"
-            android:maxLength="160" />
+            android:textSize="18sp"
+            tools:text="Levar a Beca mijar" />
 
         <TextView
-            android:id="@+id/dialog_txt_capacidade"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginBottom="6dp"
-            android:text="0/160"
-            android:textColor="@color/cinza_escuro"
-            android:textColorHint="@color/cinza_escuro" />
-
-        <TextView
-            android:id="@+id/dialog_txt_linhas"
+            android:id="@+id/dialog_done_finished"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginBottom="6dp"
-            android:textColor="@color/cinza_escuro"
-            tools:text="Linha 1/7" />
+            android:layout_margin="6dp"
+            tools:text="Completado em 9 dez 2021" />
+
     </RelativeLayout>
 
     <ImageButton
-        android:id="@+id/dialog_img_close"
+        android:id="@+id/dialog_done_img_close"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginBottom="-4dp"
@@ -83,40 +64,28 @@
         app:srcCompat="@drawable/ic_close_24" />
 
     <ImageButton
-        android:id="@+id/dialog_img_check"
+        android:id="@+id/dialog_done_img_delete"
         android:layout_width="45dp"
         android:layout_height="45dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="-2dp"
         android:background="@drawable/circular_btn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_relative_layout"
-        app:srcCompat="@drawable/ic_check_green_24"
-        app:tint="@color/white" />
-
-    <ImageButton
-        android:id="@+id/dialog_img_delete"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="-2dp"
-        android:background="@drawable/circular_btn"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toStartOf="@+id/dialog_img_save"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_done_img_undo"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_relative_layout"
         app:srcCompat="@drawable/ic_delete_26" />
 
     <ImageButton
-        android:id="@+id/dialog_img_save"
+        android:id="@+id/dialog_done_img_undo"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginTop="-2dp"
+        android:layout_marginEnd="24dp"
         android:background="@drawable/circular_btn"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/dialog_img_delete"
+        app:layout_constraintStart_toEndOf="@+id/dialog_done_img_delete"
         app:layout_constraintTop_toBottomOf="@+id/dialog_relative_layout"
-        app:srcCompat="@drawable/ic_save_34" />
+        app:srcCompat="@drawable/ic_undo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

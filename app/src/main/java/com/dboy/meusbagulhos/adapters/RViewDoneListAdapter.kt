@@ -2,7 +2,6 @@ package com.dboy.meusbagulhos.adapters
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,46 +9,46 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
-import com.dboy.meusbagulhos.auxiliares.DoubleClickListener
-import com.dboy.meusbagulhos.auxiliares.TarefaDAO
-import com.dboy.meusbagulhos.models.Tarefa
+import com.dboy.meusbagulhos.helpers.DoubleClickListener
+import com.dboy.meusbagulhos.helpers.TaskDAO
+import com.dboy.meusbagulhos.models.Task
 
-class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: TarefaDAO) :
+class RViewDoneListAdapter(private val context: Context, private val taskDAO: TaskDAO) :
     RecyclerView.Adapter<RViewDoneListAdapter.MyViewHolder>() {
-    var listaTarefasFeitas = tarefaDAO.listar(true).reversed()
+    var listTaskDone = taskDAO.getTaskList(true).reversed()
         private set
-    private lateinit var mListener: OnTarefaListener
+    private lateinit var mListener: OnTaskListener
     var isSelectedMode = false
-    val listSelectedTasks = mutableListOf<Tarefa>()
+    val listSelectedTasks = mutableListOf<Task>()
 
-    interface OnTarefaListener{
-        fun onTarefaClick(posicao: Int)
-        fun onTarefaLongClick(posicao: Int)
-        fun onTarefaDoubleClick(posicao: Int)
+    interface OnTaskListener {
+        fun onTaskClick(position: Int)
+        fun onTaskLongClick(position: Int)
+        fun onTaskDoubleClick(position: Int)
         fun hideButtons()
     }
 
-    fun setOnTarefaClickListener(listener: OnTarefaListener){
+    fun setOnTaskClickListener(listener: OnTaskListener) {
         mListener = listener
     }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val texto = itemView.findViewById<TextView>(R.id.tarefaFeitaTxt)
-        val dataFinalizada = itemView.findViewById<TextView>(R.id.tarefaFeitaDataTxt)
+        val text = itemView.findViewById<TextView>(R.id.taskDoneTxt)
+        val dateDone = itemView.findViewById<TextView>(R.id.taskDoneDateTxt)
 
-        fun vincularTexto(tarefa: Tarefa) {
-            texto.text = tarefa.texto
+        fun bindText(task: Task) {
+            text.text = task.text
 //            texto.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-            dataFinalizada.text = "${context.getText(R.string.tarefaProntaEm)} ${tarefa.dataFinalizacao}"
+            dateDone.text = "${context.getText(R.string.tarefaProntaEm)} ${task.dateDone}"
             itemView.setBackgroundColor(Color.TRANSPARENT)
         }
 
-        fun selectItem(position: Int){
-            val tarefa = listaTarefasFeitas[position]
-            if(listSelectedTasks.contains(tarefa)){
+        fun selectItem(position: Int) {
+            val tarefa = listTaskDone[position]
+            if (listSelectedTasks.contains(tarefa)) {
                 itemView.setBackgroundColor(Color.TRANSPARENT)
                 listSelectedTasks.remove(tarefa)
-            }else{
+            } else {
                 itemView.setBackgroundResource(R.color.selected_background)
                 listSelectedTasks.add(tarefa)
             }
@@ -58,34 +57,34 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
         }
 
         init {
-//            mListener.hideButtons()
-            itemView.setOnClickListener(object : DoubleClickListener(){
+            itemView.setOnClickListener(object : DoubleClickListener() {
                 override fun onDoubleClick() {
-                    val posicao = adapterPosition
-                    if (posicao != RecyclerView.NO_POSITION && !isSelectedMode) {
-                        mListener.onTarefaDoubleClick(posicao)
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION && !isSelectedMode) {
+                        mListener.onTaskDoubleClick(position)
                         Log.i("doneAdapter", "Double click!")
                     }
                 }
+
                 override fun onSingleClick() {
-                    val posicao = adapterPosition
-                    if(posicao != RecyclerView.NO_POSITION){
-                        if(isSelectedMode){
-                            selectItem(posicao)
-                            if(!isSelectedMode) mListener.hideButtons()
-                        } else mListener.onTarefaClick(posicao)
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        if (isSelectedMode) {
+                            selectItem(position)
+                            if (!isSelectedMode) mListener.hideButtons()
+                        } else mListener.onTaskClick(position)
                         Log.i("doneAdapter", "Single click!")
                     }
                 }
             })
 
             itemView.setOnLongClickListener {
-                val posicao = adapterPosition
-                if(posicao != RecyclerView.NO_POSITION){
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
                     isSelectedMode = true
-                    selectItem(posicao)
+                    selectItem(position)
 
-                    mListener.onTarefaLongClick(posicao)
+                    mListener.onTaskLongClick(position)
                     Log.i("doneAdapter", "Long click!")
                 }
                 true
@@ -95,21 +94,21 @@ class RViewDoneListAdapter(private val context: Context, private val tarefaDAO: 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.tarefa_feita, parent, false)
+        val view = inflater.inflate(R.layout.task_done, parent, false)
         return MyViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val tarefa = listaTarefasFeitas[position]
-        holder.vincularTexto(tarefa)
+        val task = listTaskDone[position]
+        holder.bindText(task)
     }
 
     override fun getItemCount(): Int {
-        return listaTarefasFeitas.size
+        return listTaskDone.size
     }
 
-    fun atualizaLista(){
-        listaTarefasFeitas = tarefaDAO.listar(true).reversed()
+    fun updateList() {
+        listTaskDone = taskDAO.getTaskList(true).reversed()
         notifyDataSetChanged()
     }
 }

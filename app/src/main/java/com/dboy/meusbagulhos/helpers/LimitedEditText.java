@@ -1,4 +1,4 @@
-package com.dboy.meusbagulhos.auxiliares;
+package com.dboy.meusbagulhos.helpers;
 
 import android.content.Context;
 import android.text.Editable;

@@ -5,25 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="1dp"
-    android:background="@color/my_background"
     android:padding="6dp">
 
     <TextView
-        android:id="@+id/tarefaNao_aFazer_txt"
+        android:id="@+id/taskDoneTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="2"
-        android:paddingEnd="6dp"
-        android:singleLine="false"
         android:textSize="18sp"
+        app:drawableEndCompat="@drawable/ic_check_green_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Fazer isso, aquilo, e isso isso isso" />
+        tools:text="Levar a Beca para mijar e tal testando blablablablablablabla 01 Levar a Beca para mijar e tal testando blablablablablablabla 02
+Levar a Beca para mijar e tal testando blablablablablablabla 03" />
 
     <TextView
-        android:id="@+id/tarefaNao_data_txt"
+        android:id="@+id/taskDoneDateTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -31,7 +30,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tarefaNao_aFazer_txt"
-        tools:text="Criado em: 30 de nov de 2021" />
+        app:layout_constraintTop_toBottomOf="@+id/taskDoneTxt"
+        tools:text="Feito em 27/11/21 as 08:11" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

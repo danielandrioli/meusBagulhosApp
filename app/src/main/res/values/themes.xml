@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="AnimacoesDialog">
+    <style name="AnimationsDialog">
         <item name="android:windowEnterAnimation">@anim/zoom_in</item>
         <item name="android:windowExitAnimation">@anim/zoom_out</item>
     </style>

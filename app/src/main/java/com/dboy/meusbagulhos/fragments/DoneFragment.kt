@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.RViewDoneListAdapter
-import com.dboy.meusbagulhos.auxiliares.TarefaDAO
-import com.dboy.meusbagulhos.models.Tarefa
+import com.dboy.meusbagulhos.helpers.TaskDAO
+import com.dboy.meusbagulhos.models.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class DoneFragment : Fragment() {
-    private lateinit var tarefaDao: TarefaDAO
+    private lateinit var taskDao: TaskDAO
     private lateinit var doneListAdapter: RViewDoneListAdapter
     private lateinit var fabDel: FloatingActionButton
     private lateinit var fabUndo: FloatingActionButton
@@ -36,16 +36,16 @@ class DoneFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_done, container, false)
 
-        tarefaDao = TarefaDAO(requireContext())
-        configuraBotoesFab(view)
-        configuraAdapter()
-        inicializaRecyclerView(view)
-        configuraBotaoVoltar()
+        taskDao = TaskDAO(requireContext())
+        setFabButtons(view)
+        setAdapter()
+        createRecyclerView(view)
+        setBackButton()
 
         return view
     }
 
-    private fun configuraBotaoVoltar() {
+    private fun setBackButton() {
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -55,7 +55,7 @@ class DoneFragment : Fragment() {
                         clearSelectedList()
                         doneListAdapter.notifyDataSetChanged()
                     } else {
-                        isEnabled = false //se não colocar como false, ocorre stackoverflow
+                        isEnabled = false //if not set to false, stackoverflow exception occurs.
                         requireActivity().onBackPressed()
                     }
                 }
@@ -63,7 +63,7 @@ class DoneFragment : Fragment() {
             )
     }
 
-    private fun configuraBotoesFab(view: View?) {
+    private fun setFabButtons(view: View?) {
         if (view != null) {
             fabDel = view.findViewById<FloatingActionButton>(R.id.doneFabDel)
             fabUndo = view.findViewById<FloatingActionButton>(R.id.doneFabUndo)
@@ -75,10 +75,10 @@ class DoneFragment : Fragment() {
                 .setMessage(R.string.aDialogMessageDelete)
                 .setPositiveButton(R.string.aDialogYes) { _, _ ->
                     for (tarefa in doneListAdapter.listSelectedTasks) {
-                        tarefaDao.deletar(tarefa)
+                        taskDao.delete(tarefa)
                     }
                     clearSelectedList()
-                    doneListAdapter.atualizaLista()
+                    doneListAdapter.updateList()
                 }
                 .setNegativeButton(R.string.aDialogNo) { _, _ ->
                 }
@@ -87,10 +87,10 @@ class DoneFragment : Fragment() {
 
         fabUndo.setOnClickListener {
             for (tarefa in doneListAdapter.listSelectedTasks) {
-                tarefaDao.desfinalizarTarefa(tarefa)
+                taskDao.undoTask(tarefa)
             }
             clearSelectedList()
-            doneListAdapter.atualizaLista()
+            doneListAdapter.updateList()
         }
     }
 
@@ -102,10 +102,10 @@ class DoneFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        doneListAdapter.atualizaLista()
+        doneListAdapter.updateList()
     }
 
-    private fun checaSelecao() {
+    private fun checkSelection() {
         if (doneListAdapter.isSelectedMode) {
             fabDel.visibility = FloatingActionButton.VISIBLE
             fabUndo.visibility = FloatingActionButton.VISIBLE
@@ -120,20 +120,20 @@ class DoneFragment : Fragment() {
         super.onPause()
     }
 
-    private fun configuraAdapter() {
-        doneListAdapter = RViewDoneListAdapter(requireContext(), tarefaDao)
-        doneListAdapter.setOnTarefaClickListener(object : RViewDoneListAdapter.OnTarefaListener {
-            override fun onTarefaClick(posicao: Int) {
-                configuraDialog(doneListAdapter.listaTarefasFeitas[posicao])
+    private fun setAdapter() {
+        doneListAdapter = RViewDoneListAdapter(requireContext(), taskDao)
+        doneListAdapter.setOnTaskClickListener(object : RViewDoneListAdapter.OnTaskListener {
+            override fun onTaskClick(position: Int) {
+                setDialog(doneListAdapter.listTaskDone[position])
             }
 
-            override fun onTarefaLongClick(posicao: Int) {
-                checaSelecao()
+            override fun onTaskLongClick(position: Int) {
+                checkSelection()
             }
 
-            override fun onTarefaDoubleClick(posicao: Int) {
-                tarefaDao.desfinalizarTarefa(doneListAdapter.listaTarefasFeitas[posicao])
-                doneListAdapter.atualizaLista()
+            override fun onTaskDoubleClick(position: Int) {
+                taskDao.undoTask(doneListAdapter.listTaskDone[position])
+                doneListAdapter.updateList()
             }
 
             override fun hideButtons() {
@@ -147,37 +147,37 @@ class DoneFragment : Fragment() {
         fabUndo.visibility = FloatingActionButton.INVISIBLE
     }
 
-    private fun inicializaRecyclerView(view: View) {
+    private fun createRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.doneFragRecycler)
         recyclerView.adapter = doneListAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun configuraDialog(tarefa: Tarefa) {
+    private fun setDialog(task: Task) {
         val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_tarefadone_layout)
+        dialog.setContentView(R.layout.dialog_taskdone_layout)
         dialog.window?.setBackgroundDrawable(ColorDrawable(0))
-        dialog.window?.setWindowAnimations(R.style.AnimacoesDialog)
+        dialog.window?.setWindowAnimations(R.style.AnimationsDialog)
 
         val btnClose = dialog.findViewById<ImageButton>(R.id.dialog_done_img_close)
         val btnDelete = dialog.findViewById<ImageButton>(R.id.dialog_done_img_delete)
-        val btnUndo = dialog.findViewById<ImageButton>(R.id.dialog_done_img_desfazer)
-        val txtTarefa = dialog.findViewById<TextView>(R.id.dialog_done_txt)
-        val txtCriadoEm = dialog.findViewById<TextView>(R.id.dialog_done_txt_created)
-        val txtFinalizadoEm = dialog.findViewById<TextView>(R.id.dialog_done_finished)
+        val btnUndo = dialog.findViewById<ImageButton>(R.id.dialog_done_img_undo)
+        val textTask = dialog.findViewById<TextView>(R.id.dialog_done_txt)
+        val textCreatedIn = dialog.findViewById<TextView>(R.id.dialog_done_txt_created)
+        val textFinishedIn = dialog.findViewById<TextView>(R.id.dialog_done_finished)
 
-        txtTarefa.text = tarefa.texto
-        txtCriadoEm.text = "${getString(R.string.tarefaCriadaEm)} ${tarefa.dataCriacao}"
-        txtFinalizadoEm.text = "${getString(R.string.tarefaProntaEm)} ${tarefa.dataFinalizacao}"
+        textTask.text = task.text
+        textCreatedIn.text = "${getString(R.string.tarefaCriadaEm)} ${task.dateCreation}"
+        textFinishedIn.text = "${getString(R.string.tarefaProntaEm)} ${task.dateDone}"
 
         btnDelete.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.aDialogTitle)
                 .setMessage(R.string.aDialogMessageDelete)
                 .setPositiveButton(R.string.aDialogYes) { _, _ ->
-                    if (tarefa != null) {
-                        tarefaDao.deletar(tarefa)
-                        doneListAdapter.atualizaLista()
+                    if (task != null) {
+                        taskDao.delete(task)
+                        doneListAdapter.updateList()
                     }
                     dialog.cancel()
                 }
@@ -191,9 +191,9 @@ class DoneFragment : Fragment() {
         }
 
         btnUndo.setOnClickListener {
-            tarefaDao.desfinalizarTarefa(tarefa)
+            taskDao.undoTask(task)
             dialog.cancel()
-            doneListAdapter.atualizaLista()
+            doneListAdapter.updateList()
         }
 
         dialog.show()

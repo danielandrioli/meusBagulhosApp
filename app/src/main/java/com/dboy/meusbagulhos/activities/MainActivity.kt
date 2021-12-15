@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.dboy.meusbagulhos.R
 import com.dboy.meusbagulhos.adapters.ViewPagerAdapter
-import com.dboy.meusbagulhos.auxiliares.DbHelper
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -17,17 +16,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        configuraViewPagerAdapter()
-        configuraTabLayout()
+        setViewPagerAdapter()
+        setTabLayout()
 
     }
 
-    private fun configuraViewPagerAdapter() {
+    private fun setViewPagerAdapter() {
         val viewPagerAdapter = ViewPagerAdapter(this, 2)
         viewPager2.adapter = viewPagerAdapter
     }
 
-    private fun configuraTabLayout() {
+    private fun setTabLayout() {
         TabLayoutMediator(tabLayout, viewPager2) { tab: TabLayout.Tab, position: Int ->
             when (position) {
                 0 -> tab.text = getText(R.string.tabUndone)

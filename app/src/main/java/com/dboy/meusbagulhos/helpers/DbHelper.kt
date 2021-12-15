@@ -1,17 +1,15 @@
-package com.dboy.meusbagulhos.auxiliares
+package com.dboy.meusbagulhos.helpers
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import android.widget.Toast
-import java.lang.Exception
 
 
-class DbHelper(context: Context) : SQLiteOpenHelper(context, nomeDB, null, versao) {
+class DbHelper(context: Context) : SQLiteOpenHelper(context, nameDB, null, version) {
 
     override fun onCreate(p0: SQLiteDatabase?) {
-        val sql = "CREATE TABLE IF NOT EXISTS $nomeTabelaTarefas" +
+        val sql = "CREATE TABLE IF NOT EXISTS $nameTaskTable" +
                 "(id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " texto TEXT NOT NULL," +
                 " dataCriacao VARCHAR NOT NULL," +
@@ -21,12 +19,12 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, nomeDB, null, versa
                 " positionUndone INT," +
                 " positionDone INT)"
 
-        try{
-            if (p0 != null){
+        try {
+            if (p0 != null) {
                 p0.execSQL(sql)
                 Log.i(tagLogDbHelper, "Comando de criação executado com sucesso!")
             } else Log.i(tagLogDbHelper, "db null")
-        }catch (exception: Exception){
+        } catch (exception: Exception) {
             Log.i(tagLogDbHelper, "Erro ao criar tabela: $exception")
         }
     }
@@ -35,9 +33,9 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, nomeDB, null, versa
         TODO("Not yet implemented")
     }
 
-    companion object{
-        var versao = 1
-        val nomeDB = "DB_TAREFAS"
-        val nomeTabelaTarefas = "Tarefas"
+    companion object {
+        var version = 1
+        val nameDB = "DB_TAREFAS"
+        val nameTaskTable = "Tarefas"
     }
 }
