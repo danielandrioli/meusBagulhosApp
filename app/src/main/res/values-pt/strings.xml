@@ -16,4 +16,9 @@
     <string name="aDialogMessageDelete">Tem certeza que deseja deletar essa tarefa?</string>
     <string name="aDialogTaskEdited">Tarefa editada!</string>
     <string name="aDialogTaskDeleted">Tarefa deletada!</string>
+    <string name="intro01">Bem-vindo(a) ao app Meus Bagulhos! Crie e edite suas tarefas.</string>
+    <string name="intro02">Clique e arraste os items da sua lista para reorganizá-los como queira.</string>
+    <string name="intro03">Dê um clique duplo sobre uma tarefa para finalizá-la ou revertê-la.</string>
+    <string name="intro04">Na sua lista de tarefas prontas, dê um clique longo sobre um item para selecioná-lo.</string>
+    <string name="intro05">Entendido!</string>
 </resources>

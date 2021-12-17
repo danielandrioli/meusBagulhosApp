@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
 
         setViewPagerAdapter()
         setTabLayout()
-
     }
 
     private fun setViewPagerAdapter() {
